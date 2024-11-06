@@ -1,7 +1,8 @@
-let solvedBoard = []; // Global variable to store the solved board
-let timerInterval;    // Timer interval ID for control
-let isPaused = false; // Track if the timer is paused
-let elapsedSeconds = 0; // Store elapsed time for resuming
+let solvedBoard = [];
+let timerInterval;
+let isPaused = false;
+let elapsedSeconds = 0;
+let activeCell = null; // Track the currently active cell
 
 // Predetermined Sudoku puzzles for different difficulty levels
 const puzzles = {
@@ -50,7 +51,7 @@ function updateTimerDisplay() {
 // Start the timer
 function startTimer() {
     isPaused = false;
-    clearInterval(timerInterval); // Clear any existing timer
+    clearInterval(timerInterval);
     timerInterval = setInterval(() => {
         if (!isPaused) {
             elapsedSeconds++;
@@ -61,7 +62,7 @@ function startTimer() {
 
 // Pause the timer
 function pauseTimer() {
-    isPaused = !isPaused; // Toggle pause state
+    isPaused = !isPaused;
     document.getElementById("pause-timer").textContent = isPaused ? "Resume Timer" : "Pause Timer";
 }
 
@@ -73,24 +74,23 @@ function stopTimer() {
 // Create an empty Sudoku grid
 function createEmptyGrid() {
     const grid = document.getElementById('sudoku-grid');
-    grid.innerHTML = '';  // Clear the grid before populating
+    grid.innerHTML = '';  
     for (let i = 0; i < 81; i++) {
         let input = document.createElement('input');
         input.type = 'text';
-        input.maxLength = '1'; // Only allow single-digit input
+        input.maxLength = '1';
         input.id = `cell-${i}`;
+        input.addEventListener('focus', () => activeCell = input); // Track active cell on focus
+        input.addEventListener('input', handleKeyboardInput); // Handle keyboard input
         grid.appendChild(input);
     }
 }
 
-// Load a predetermined Sudoku puzzle based on difficulty
+// Load a new puzzle and start the timer
 function generateNewPuzzle() {
     clearGrid();
-
     const difficulty = document.getElementById('difficulty').value;
     const puzzle = puzzles[difficulty];
-
-    // Display the puzzle on the grid
     puzzle.flat().forEach((value, index) => {
         let cell = document.getElementById(`cell-${index}`);
         if (value !== 0) {
@@ -102,12 +102,9 @@ function generateNewPuzzle() {
         }
     });
 
-    // Store the solution by solving the puzzle before any input is taken
-    const board = puzzle.flat(); // Flatten the puzzle to a 1D array
-    solvedBoard = [...board];    // Copy the puzzle into solvedBoard
-    solve(solvedBoard);          // Solve the board using backtracking
-
-    // Reset and start the timer
+    const board = puzzle.flat();
+    solvedBoard = [...board];
+    solve(solvedBoard);
     elapsedSeconds = 0;
     updateTimerDisplay();
     startTimer();
@@ -117,7 +114,7 @@ function generateNewPuzzle() {
 function solve(board) {
     let emptySpot = findEmpty(board);
     if (!emptySpot) {
-        return true; // Solved
+        return true;
     }
 
     let [row, col] = emptySpot;
@@ -130,7 +127,7 @@ function solve(board) {
                 return true;
             }
 
-            board[row * 9 + col] = 0; // reset on backtrack
+            board[row * 9 + col] = 0;
         }
     }
 
@@ -168,7 +165,23 @@ function isSafe(board, row, col, num) {
     return true;
 }
 
-// Check if the current puzzle input matches the solved board stored earlier
+// Handle keyboard input
+function handleKeyboardInput(event) {
+    const input = event.target;
+    const value = input.value;
+    if (!/^[1-9]$/.test(value)) {
+        input.value = '';
+    }
+}
+
+// Handle button-based number input
+function handleNumberButtonClick(value) {
+    if (activeCell && !activeCell.disabled) {
+        activeCell.value = value;
+    }
+}
+
+// Check if the current puzzle input matches the solved board
 function checkSolution() {
     for (let i = 0; i < 81; i++) {
         const userInput = document.getElementById(`cell-${i}`).value;
@@ -177,7 +190,7 @@ function checkSolution() {
             return;
         }
     }
-    stopTimer(); // Stop the timer if the solution is correct
+    stopTimer();
     showPopup("Correct solution!");
 }
 
@@ -188,12 +201,10 @@ function showPopup(message) {
     messageElement.innerHTML = message;
     popup.style.display = "block";
 
-    // Close the popup when the close button is clicked
     document.querySelector('.close').onclick = function() {
         popup.style.display = "none";
     };
 
-    // Close the popup when clicking anywhere outside of the popup content
     window.onclick = function(event) {
         if (event.target === popup) {
             popup.style.display = "none";
@@ -212,23 +223,21 @@ function clearGrid() {
     }
 }
 
-// Initialize the game and add event listeners for the buttons
+// Initialize the game and add event listeners for buttons
 window.onload = function() {
-    console.log("window.onload called"); // Debugging log
     createEmptyGrid();
 
-    // Event listener for "New Puzzle" button
     document.getElementById('new-puzzle').addEventListener('click', generateNewPuzzle);
-
-    // Event listener for "Check Solution" button
     document.getElementById('check-solution').addEventListener('click', checkSolution);
-
-    // Event listener for "Pause Timer" button
     document.getElementById('pause-timer').addEventListener('click', pauseTimer);
-
-    // Event listener for "Clear" button
     document.getElementById('clear-grid').addEventListener('click', clearGrid);
 
-    // Automatically generate a new puzzle on page load
+    document.querySelectorAll('.number-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            handleNumberButtonClick(button.getAttribute('data-value'));
+        });
+    });
+
     generateNewPuzzle();
 };
+

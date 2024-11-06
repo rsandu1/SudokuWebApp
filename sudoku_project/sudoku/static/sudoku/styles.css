@@ -55,6 +55,20 @@ button {
   margin: 5px;
 }
 
+/* Number buttons styling */
+#number-buttons {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.number-btn {
+  width: 50px;
+  height: 50px;
+  font-size: 18px;
+  margin: 2px;
+  cursor: pointer;
+}
+
 /* Timer styling */
 #timer {
   font-size: 20px;

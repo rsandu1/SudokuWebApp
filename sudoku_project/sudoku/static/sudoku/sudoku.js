@@ -1,4 +1,7 @@
 let solvedBoard = []; // Global variable to store the solved board
+let timerInterval;    // Timer interval ID for control
+let isPaused = false; // Track if the timer is paused
+let elapsedSeconds = 0; // Store elapsed time for resuming
 
 // Predetermined Sudoku puzzles for different difficulty levels
 const puzzles = {
@@ -37,6 +40,36 @@ const puzzles = {
     ]
 };
 
+// Function to update the timer display
+function updateTimerDisplay() {
+    const minutes = Math.floor(elapsedSeconds / 60).toString().padStart(2, '0');
+    const seconds = (elapsedSeconds % 60).toString().padStart(2, '0');
+    document.getElementById("timer").textContent = `${minutes}:${seconds}`;
+}
+
+// Start the timer
+function startTimer() {
+    isPaused = false;
+    clearInterval(timerInterval); // Clear any existing timer
+    timerInterval = setInterval(() => {
+        if (!isPaused) {
+            elapsedSeconds++;
+            updateTimerDisplay();
+        }
+    }, 1000);
+}
+
+// Pause the timer
+function pauseTimer() {
+    isPaused = !isPaused; // Toggle pause state
+    document.getElementById("pause-timer").textContent = isPaused ? "Resume Timer" : "Pause Timer";
+}
+
+// Stop the timer
+function stopTimer() {
+    clearInterval(timerInterval);
+}
+
 // Create an empty Sudoku grid
 function createEmptyGrid() {
     const grid = document.getElementById('sudoku-grid');
@@ -73,6 +106,11 @@ function generateNewPuzzle() {
     const board = puzzle.flat(); // Flatten the puzzle to a 1D array
     solvedBoard = [...board];    // Copy the puzzle into solvedBoard
     solve(solvedBoard);          // Solve the board using backtracking
+
+    // Reset and start the timer
+    elapsedSeconds = 0;
+    updateTimerDisplay();
+    startTimer();
 }
 
 // Backtracking algorithm to solve the puzzle
@@ -139,6 +177,7 @@ function checkSolution() {
             return;
         }
     }
+    stopTimer(); // Stop the timer if the solution is correct
     showPopup("Correct solution!");
 }
 
@@ -175,6 +214,7 @@ function clearGrid() {
 
 // Initialize the game and add event listeners for the buttons
 window.onload = function() {
+    console.log("window.onload called"); // Debugging log
     createEmptyGrid();
 
     // Event listener for "New Puzzle" button
@@ -183,9 +223,12 @@ window.onload = function() {
     // Event listener for "Check Solution" button
     document.getElementById('check-solution').addEventListener('click', checkSolution);
 
+    // Event listener for "Pause Timer" button
+    document.getElementById('pause-timer').addEventListener('click', pauseTimer);
+
     // Event listener for "Clear" button
     document.getElementById('clear-grid').addEventListener('click', clearGrid);
 
+    // Automatically generate a new puzzle on page load
     generateNewPuzzle();
 };
-

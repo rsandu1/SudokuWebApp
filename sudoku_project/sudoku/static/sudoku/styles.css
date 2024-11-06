@@ -1,3 +1,4 @@
+/* Styles for the Sudoku grid and controls */
 body {
   font-family: Arial, sans-serif;
   text-align: center;
@@ -7,8 +8,7 @@ body {
   display: grid;
   grid-template-columns: repeat(9, 50px);
   margin: 20px auto;
-  margin: 20px auto; /* Center the grid horizontally */
-justify-content: center; /* Ensures the grid content is centered */
+  justify-content: center;
 }
 
 #sudoku-grid input {
@@ -24,7 +24,7 @@ input:disabled {
 }
 
 #controls {
-    text-align: center; /* Center the buttons horizontally */
+    text-align: center;
     margin: 20px auto;
 }
 
@@ -32,4 +32,47 @@ button {
   padding: 10px 15px;
   font-size: 16px;
   margin: 5px;
+}
+
+/* Timer styling */
+#timer {
+  font-size: 20px;
+  font-weight: bold;
+  margin-right: 15px;
+}
+
+/* Popup modal styles */
+.popup {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.popup-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    text-align: center;
+    font-size: 18px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
 }

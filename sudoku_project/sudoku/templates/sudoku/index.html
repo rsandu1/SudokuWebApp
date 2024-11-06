@@ -23,9 +23,13 @@
   <div id="sudoku-grid"></div>
 
   <div id="controls">
-    <!-- Add correct id attributes and remove inline onclick -->
+    <!-- Timer Display -->
+    <span id="timer">00:00</span>
+
+    <!-- Buttons -->
     <button id="new-puzzle">New Puzzle</button>
     <button id="check-solution">Check Solution</button>
+    <button id="pause-timer">Pause Timer</button>
     <button id="clear-grid">Clear</button>
   </div>
 
@@ -37,7 +41,6 @@
     </div>
   </div>
 
-  <script src="{% static 'sudoku/sudoku.js' %}"></script>
+  <script src="{% static 'sudoku/sudoku.js' %}?v=1.0" defer></script>
 </body>
 </html>
-

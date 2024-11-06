@@ -11,6 +11,27 @@ body {
   justify-content: center;
 }
 
+/* Bold borders for 3x3 mini-grids */
+#sudoku-grid input:nth-child(9n+1), /* Left border for 1st column of each 3x3 */
+#sudoku-grid input:nth-child(9n+4), /* Left border for 4th column of each 3x3 */
+#sudoku-grid input:nth-child(9n+7) { /* Left border for 7th column of each 3x3 */
+    border-left: 3px solid #000;
+}
+
+#sudoku-grid input:nth-child(9n+9) { /* Right border for 9th column of each 3x3 */
+  border-right: 3px solid #000;
+}
+
+#sudoku-grid input:nth-child(-n+9), /* Top border for 1st row */
+#sudoku-grid input:nth-child(n+28):nth-child(-n+36), /* Top border for 4th row */
+#sudoku-grid input:nth-child(n+55):nth-child(-n+63) { /* Top border for 7th row */
+  border-top: 3px solid #000;
+}
+
+#sudoku-grid input:nth-child(n+73):nth-child(-n+81) { /* Top border for 7th row */
+  border-bottom: 3px solid #000;
+}
+
 #sudoku-grid input {
   width: 50px;
   height: 50px;

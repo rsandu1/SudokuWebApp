@@ -216,9 +216,9 @@ function showPopup(message) {
 function clearGrid() {
     for (let i = 0; i < 81; i++) {
         let cell = document.getElementById(`cell-${i}`);
-        if (cell) {
+        if (!cell.disabled) {
             cell.value = '';
-            cell.disabled = false;
+            // TODO: handle in database
         }
     }
 }

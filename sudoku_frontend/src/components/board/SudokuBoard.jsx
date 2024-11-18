@@ -26,7 +26,7 @@ function SudokuBoard() {
     };
 
     return (
-        <div className={`sudoku-overlay ${isPaused ? 'isPaused' : ''}`}>
+        <div className= 'sudoku-overlay'>
             {isPaused && (
                 <div className="pause-icon">
                     <PauseIcon style={{ fontSize: 80, color: '#000' }} />

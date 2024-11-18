@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, Stack, MenuItem, Select, Typography } from '@mui/material';
 import PauseIcon from '@mui/icons-material/Pause';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import './menu.css'
 import { useSudoku } from '../../context/SudokuContext';
 
@@ -26,6 +27,12 @@ const UpperMenu = () => {
         }
         return () => clearInterval(interval);
     }, [isPaused]);
+    
+    const handleStartGameButton = () => {
+        startGame();
+        setTimer(0);
+        setIsPaused(true);
+    };
 
     return (
         <Box
@@ -40,7 +47,7 @@ const UpperMenu = () => {
         >
             <Stack direction="row" spacing={2} alignItems="center">
                 {/* Start New Game Button */}
-                <Button variant="contained" color="success" onClick={startGame}>
+                <Button variant="contained" color="success" onClick={handleStartGameButton}>
                     START NEW GAME
                 </Button>
 
@@ -77,12 +84,11 @@ const UpperMenu = () => {
                     {Math.floor(timer / 60)}:{String(timer % 60).padStart(2, '0')}
                 </Typography>
 
-
                 {/* Pause Game Button */}
                 <Button
                     variant="contained"
                     color={isPaused ? "success" : "error"}
-                    startIcon={<PauseIcon />}
+                    startIcon={isPaused ? <PlayArrowIcon/> : <PauseIcon />}
                     onClick={() => setIsPaused((prev) => !prev)}
                 >
                     {isPaused ? 'Resume' : 'Pause'}

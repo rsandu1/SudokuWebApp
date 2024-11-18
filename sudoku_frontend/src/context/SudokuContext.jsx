@@ -11,6 +11,7 @@ export const SudokuProvider = ({ children }) => {
     const [board, setBoard] = useState(defaultBoard);
     const [history, setHistory] = useState([]);
     const [difficulty, setDifficulty] = useState('0');
+    const [isPaused, setIsPaused] = useState(true);
 
     // Convert the passed in string into a 2D array
     const parseBoard = (boardString) => {
@@ -31,7 +32,7 @@ export const SudokuProvider = ({ children }) => {
         )
             .then((response) => {
                 if (response.data && response.data.board) {
-                    const parsedBoard = parseBoard(response.data.board, );
+                    const parsedBoard = parseBoard(response.data.board,);
                     setBoard(parsedBoard);
                     setHistory([]);
                     updateBoard();
@@ -78,7 +79,11 @@ export const SudokuProvider = ({ children }) => {
     };
 
     return (
-        <SudokuContext.Provider value={{ board, updateBoard, undo, difficulty, setDifficulty, startGame }}>
+        <SudokuContext.Provider value={{
+            board, updateBoard, undo, 
+            difficulty, setDifficulty, startGame, 
+            isPaused, setIsPaused
+        }}>
             {children}
         </SudokuContext.Provider>
     );

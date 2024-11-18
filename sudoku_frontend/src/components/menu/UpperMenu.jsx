@@ -7,14 +7,13 @@ import { useSudoku } from '../../context/SudokuContext';
 
 const UpperMenu = () => {
     // Set Difficulty
-    const { difficulty, setDifficulty, startGame } = useSudoku();
+    const { difficulty, setDifficulty, startGame ,isPaused, setIsPaused} = useSudoku();
     const handleDifficultyChange = (event) => {
         setDifficulty(event.target.value); // Directly call setDifficulty
     };
 
     // Timer
     const [timer, setTimer] = useState(0);
-    const [isPaused, setIsPaused] = useState(true);
 
     useEffect(() => {
         let interval = null;

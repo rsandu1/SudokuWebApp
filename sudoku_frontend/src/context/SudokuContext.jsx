@@ -6,7 +6,7 @@ const SudokuContext = createContext();
 
 export const SudokuProvider = ({ children }) => {
     const defaultBoard = Array.from({ length: 9 }, () => Array(9).fill(-1));
-    const boardType = [[9, 40], [9, 20], [4, 12]];
+    const boardType = [[9, 40], [9, 20], [4, 12]]; // Board length + cells to fill
 
     const [board, setBoard] = useState(defaultBoard);
     const [history, setHistory] = useState([]);
@@ -31,7 +31,6 @@ export const SudokuProvider = ({ children }) => {
         )
             .then((response) => {
                 if (response.data && response.data.board) {
-                    console.log('Game started successfully:', response.data);
                     const parsedBoard = parseBoard(response.data.board, );
                     setBoard(parsedBoard);
                     setHistory([]);

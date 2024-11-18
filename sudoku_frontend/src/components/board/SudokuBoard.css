@@ -1,20 +1,19 @@
+/* Sudoku board table */
 .sudoku-board {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    border-collapse: collapse; /* Enable border collapsing */
     margin: 20px;
-}
-
-.sudoku-row {
     display: flex;
+    align-items: center;
+    flex-direction: column;
 }
 
+/* Individual cells in the Sudoku table */
 .sudoku-cell {
     width: 50px;
     height: 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    text-align: center;
+    vertical-align: middle; 
+    color:black;
     font-size: 25px;
     font-weight: bold;
     border: 1px solid #ccc;
@@ -24,34 +23,48 @@
     background-color: #fff;
 }
 
-/* Borders for 3x3 sub-grids */
-.sudoku-cell:nth-child(3n) {
-    border-right: 3.5px solid black;
+/* Highlight editable cells */
+.sudoku-cell.editable {
+    background-color: #f9f9ff;
+    color: rgb(0, 119, 158);
 }
 
-.sudoku-row:nth-child(3n) .sudoku-cell {
-    border-bottom: 3.5px solid black;
-}
-
-.sudoku-cell:first-child {
-    border-left: 3.5px solid black;
-}
-
-.sudoku-row:first-child .sudoku-cell {
-    border-top: 3.5px solid black;
-}
-
-
+/* Highlight focused cells */
 .sudoku-cell:focus {
     border-color: #007bff;
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
-.sudoku-cell {
-    color: black;
+/* Borders for 3x3 sub-grids (9x9 Sudoku board) */
+.sub-cell-3:nth-child(3n) {
+    border-right: 3.5px solid black;
 }
 
-.sudoku-cell.editable {
-    background-color: #f9f9ff;
-    color: rgb(0, 119, 158);
+.sub-row-3:nth-child(3n) .sudoku-cell {
+    border-bottom: 3.5px solid black;
+}
+
+.sub-cell-3:first-child {
+    border-left: 3.5px solid black;
+}
+
+.sub-row-3:first-child .sudoku-cell {
+    border-top: 3.5px solid black;
+}
+
+/* Borders for 2x2 sub-grids (4x4 Sudoku board) */
+.sub-cell-2:nth-child(2n) {
+    border-right: 3.5px solid black;
+}
+
+.sub-row-2:nth-child(2n) .sudoku-cell {
+    border-bottom: 3.5px solid black;
+}
+
+.sub-cell-2:first-child {
+    border-left: 3.5px solid black;
+}
+
+.sub-row-2:first-child .sudoku-cell {
+    border-top: 3.5px solid black;
 }

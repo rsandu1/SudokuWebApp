@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Stack } from '@mui/material';
+import { Box, Button, Stack, Switch, FormControlLabel, Typography } from '@mui/material';
 import UndoIcon from '@mui/icons-material/Undo';
 import RedoIcon from '@mui/icons-material/Redo';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
@@ -22,6 +22,7 @@ const LowerMenu = () => {
             }}
         >
             <Stack direction="row" spacing={2}>
+                {/* Undo */}
                 <Button
                     variant="contained"
                     color="primary"
@@ -30,6 +31,8 @@ const LowerMenu = () => {
                 >
                     Undo
                 </Button>
+
+                {/* Redo */}
                 <Button
                     variant="contained"
                     color="primary"
@@ -37,6 +40,8 @@ const LowerMenu = () => {
                 >
                     Redo
                 </Button>
+
+                {/* Hint */}
                 <Button
                     variant="contained"
                     color="info"
@@ -44,13 +49,17 @@ const LowerMenu = () => {
                 >
                     Hint
                 </Button>
-                <Button
+
+                {/* Note */}
+                {/* <Button
                     variant="contained"
                     color="warning"
                     startIcon={<NoteAddIcon />}
                 >
                     Note
-                </Button>
+                </Button> */}
+
+                {/* Check Sudoku */}
                 <Button
                     variant="contained"
                     color="success"
@@ -58,6 +67,24 @@ const LowerMenu = () => {
                 >
                     Check Sudoku
                 </Button>
+                <Box sx={{
+                    color: 'white',
+                    bgcolor: '#ED6C02',
+                    borderRadius: 1,
+                    paddingBottom: 1
+                }}>
+                    <FormControlLabel
+                        control={<Switch color="primary" />}
+                        label={
+                            <Box display="flex" alignItems="center" gap={1}>
+                                <NoteAddIcon />
+                                <Typography variant="body1">Note</Typography>
+                            </Box>
+                        }
+                        labelPlacement="bottom"
+                    />
+                </Box>
+
             </Stack>
         </Box>
     );

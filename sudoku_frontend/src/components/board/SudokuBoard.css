@@ -8,12 +8,12 @@
     display: flex;
     align-items: center;
     flex-direction: column;
-    transition: filter 0.1s ease-in-out;
+    transition: filter 0.01s ease-in-out;
 }
 
 /* Blur the board when paused*/
 .sudoku-board.blur {
-    filter: blur(3px); 
+    filter: blur(7px); 
     pointer-events: none; 
 }
 
@@ -54,8 +54,8 @@
 }
 
 .sudoku-cell:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    border: 2pt solid #007bff;
+    /* box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); */
 }
 
 /* Borders for 3x3 sub-grids (9x9 Sudoku board) */

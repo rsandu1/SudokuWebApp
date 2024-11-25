@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 
-
 const SudokuContext = createContext();
 
 export const SudokuProvider = ({ children }) => {
@@ -9,11 +8,15 @@ export const SudokuProvider = ({ children }) => {
     const boardType = [[9, 40], [9, 20], [4, 12]]; // Board length + cells to fill
 
     const [board, setBoard] = useState(defaultBoard);
-    const [history, setHistory] = useState([]);
-    const [difficulty, setDifficulty] = useState('0');
+    const [difficulty, setDifficulty] = useState(0);
     const [isPaused, setIsPaused] = useState(true);
+    const [inGame, setInGame] = useState(false);
+    const [timer, setTimer] = useState(0);
+    const [curDifficulty, setCurDifficulty] = useState(0);
+    const boardTypeText = ["9x9 40", "9x9 20", "4x4 12"];
+    const [boardID, setBoardID] = useState(0)
 
-    // Convert the passed in string into a 2D array
+    // Convert the board string into a 2D array
     const parseBoard = (boardString) => {
         let size = boardType[difficulty][0];
         return Array.from({ length: size }, (_, rowIndex) =>
@@ -23,8 +26,9 @@ export const SudokuProvider = ({ children }) => {
             })));
     };
 
+    // [GET] Request, send board type and render
     const startGame = () => {
-        axios.post('http://127.0.0.1:8000/sudoku/board',
+        axios.post('/api/sudoku/board',
             {
                 size: boardType[difficulty][0],
                 num_remove: boardType[difficulty][1]
@@ -32,10 +36,9 @@ export const SudokuProvider = ({ children }) => {
         )
             .then((response) => {
                 if (response.data && response.data.board) {
-                    const parsedBoard = parseBoard(response.data.board,);
+                    const parsedBoard = parseBoard(response.data.board);
                     setBoard(parsedBoard);
-                    setHistory([]);
-                    updateBoard();
+                    setBoardID(response.data.board_id)
                 } else {
                     throw new Error('Invalid response data');
                 }
@@ -47,9 +50,6 @@ export const SudokuProvider = ({ children }) => {
 
     // Function to update the board and store its history
     const updateBoard = (row, col, newValue) => {
-        const newHistory = [...history, { row, col, prevValue: board[row][col].value }];
-        setHistory(newHistory);
-
         const newBoard = board.map((r, rowIndex) =>
             r.map((cell, colIndex) =>
                 rowIndex === row && colIndex === col
@@ -62,27 +62,18 @@ export const SudokuProvider = ({ children }) => {
 
     // Function to undo the last change
     const undo = () => {
-        if (history.length === 0) return;
-
-        const lastChange = history.pop();
-        setHistory([...history]); // Update history by removing the last entry
-
-        const { row, col, prevValue } = lastChange;
-        const newBoard = board.map((r, rowIndex) =>
-            r.map((cell, colIndex) =>
-                rowIndex === row && colIndex === col
-                    ? { ...cell, value: prevValue }
-                    : cell
-            )
-        );
-        setBoard(newBoard);
     };
 
     return (
         <SudokuContext.Provider value={{
-            board, updateBoard, undo, 
+            board, boardID,
+            updateBoard, undo, 
             difficulty, setDifficulty, startGame, 
-            isPaused, setIsPaused
+            isPaused, setIsPaused,
+            inGame, setInGame,
+            timer, setTimer,
+            boardTypeText,
+            curDifficulty, setCurDifficulty
         }}>
             {children}
         </SudokuContext.Provider>

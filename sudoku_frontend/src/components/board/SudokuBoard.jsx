@@ -5,14 +5,8 @@ import './SudokuBoard.css';
 import { useSudoku } from '../../context/SudokuContext';
 
 function SudokuBoard() {
-    const { board, updateBoard, isPaused, setIsPaused } = useSudoku();
+    const { board, updateBoard, isPaused, inGame } = useSudoku();
     const subGridSize = board.length;
-    // Handle user input for an editable cell and update board
-    const handleCellInput = (row, col, value) => {
-        if (!isPaused && board[row][col].isEditable && !isNaN(value) && value >= 1 && value <= 9) {
-            updateBoard(row, col, Number(value));
-        }
-    };
 
     // Event Handler for user actions
     const handleKeyDown = (event, row, col) => {
@@ -20,20 +14,20 @@ function SudokuBoard() {
             if (event.key === 'Backspace' || event.key === 'Delete') {
                 updateBoard(row, col, 0);
             } else if (!isNaN(event.key) && event.key >= 1 && event.key <= 9) {
-                handleCellInput(row, col, event.key);
+                updateBoard(row, col, Number(event.key));
             }
         }
     };
 
     return (
         <div className= 'sudoku-overlay'>
-            {isPaused && (
+            {isPaused && inGame && (
                 <div className="pause-icon">
                     <PauseIcon style={{ fontSize: 80, color: '#000' }} />
                 </div>
             )}
 
-            <table className={`sudoku-board ${isPaused ? 'blur' : ''}`}>
+            <table className={`sudoku-board ${isPaused && inGame ? 'blur' : ''}`}>
                 <tbody>
                     {board.map((row, rowIndex) => (
                         <tr

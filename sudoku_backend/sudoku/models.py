@@ -1,13 +1,39 @@
 from django.db import models
 from django.utils.timezone import now
 
-
-class sudokuBoard(models.Model):
+class SudokuBoard(models.Model):
     board_id = models.AutoField(primary_key=True)
     board = models.CharField(max_length=81)
     solution = models.CharField(max_length=81)
-    user_input = models.CharField(max_length=81, blank=True, default="0" * 81)
+    userBoard = models.CharField(max_length=81, null=True, blank=True)
     creation_time = models.DateField(default=now)
     
     class Meta:
         ordering = ['-creation_time']
+        
+class ActionHistory(models.Model):
+    # 1-1 relationship with board, delete all history when board is deleted
+    sudoku_board = models.OneToOneField(
+        SudokuBoard, 
+        on_delete=models.CASCADE, 
+        related_name='history',
+    )
+    x = models.PositiveBigIntegerField()
+    y = models.PositiveBigIntegerField()
+    previous_value = models.IntegerField()
+    new_value = models.IntegerField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    undone = models.BooleanField(default=False)
+    
+    class Meta:
+        ordering = ['timestamp']
+        
+class NoteHistory(models.Model):
+    sudoku_board = models.OneToOneField(
+        SudokuBoard, 
+        on_delete=models.CASCADE, 
+        related_name='note',
+    )
+    x = models.PositiveBigIntegerField()
+    y = models.PositiveBigIntegerField()
+    value = models.IntegerField()

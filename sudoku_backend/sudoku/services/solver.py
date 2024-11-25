@@ -1,4 +1,0 @@
-"""
-Solver for sudoku game
-"""
-

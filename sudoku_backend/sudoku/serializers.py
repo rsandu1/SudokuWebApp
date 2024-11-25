@@ -1,6 +1,6 @@
 from django.contrib.auth.models import Group, User
 from rest_framework import serializers
-from .models import sudokuBoard
+from .models import SudokuBoard
 
 # class UserSerializer(serializers.HyperlinkedModelSerializer):
 #     class Meta:
@@ -15,5 +15,5 @@ from .models import sudokuBoard
 
 class SudokuBoardSerializer(serializers.ModelSerializer):
     class Meta:
-        model = sudokuBoard
+        model = SudokuBoard
         fields = '__all__'

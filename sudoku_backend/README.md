@@ -9,7 +9,14 @@
     ```bash
     pip install -r requirements.txt
     ```
-2. Run Locally
+
+3. Get database ready
+    ```bash
+    python manage.py makemigrations
+    python manage.py migrate
+    ```
+
+4. Run Locally
     ```bash
     python manage.py runserver
     ```

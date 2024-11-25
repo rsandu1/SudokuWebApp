@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from sudoku.models import SudokuBoard, ActionHistory, NoteHistory
+from sudoku.services.check_board import checkBoard
+from sudoku.services.get_hint import get_hint
 
 """
 User Input
@@ -19,16 +21,17 @@ class InputView(APIView):
 
             if x is None or y is None or new_value is None:
                 return Response({"detail": "Missing input parameters."}, status=status.HTTP_400_BAD_REQUEST)
-            
+
             if not (0 <= x < 9 and 0 <= y < 9):
                 return Response({"detail": "Invalid row or column index."}, status=status.HTTP_400_BAD_REQUEST)
-            
+
             if not (0 <= new_value <= board_size):
                 return Response({"detail": "Value must be between 0 and 9."}, status=status.HTTP_400_BAD_REQUEST)
-            
+
             # Remove all histories that were undone
-            ActionHistory.objects.filter(sudoku_board=board, undone=True).delete()
-        
+            ActionHistory.objects.filter(
+                sudoku_board=board, undone=True).delete()
+
             # Update user input board
             index = x * board_size + y
             previous_value = int(board.userBoard[index])
@@ -36,7 +39,7 @@ class InputView(APIView):
             user_board_array[index] = str(new_value)
             board.userBoard = ''.join(user_board_array)
             board.save()
-            
+
             ActionHistory.objects.create(
                 sudoku_board=board,
                 x=x,
@@ -44,14 +47,14 @@ class InputView(APIView):
                 previous_value=previous_value,
                 new_value=new_value
             )
-            
+
             return Response({
                 "detail": "Board updated successfully.",
             }, status=status.HTTP_200_OK)
-            
+
         except SudokuBoard.DoesNotExist:
             return Response({"detail": "Board not found."}, status=status.HTTP_404_NOT_FOUND)
-            
+
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -84,12 +87,11 @@ class UndoView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-
 """
 Redo API View
 """
 class RedoView(APIView):
-    def post(self,request):
+    def post(self, request):
         try:
             id = request.data.get('board_id')
             board = SudokuBoard.objects.get(pk=id)
@@ -109,7 +111,6 @@ class RedoView(APIView):
             last_action.save()
             return Response({"detail": "Redo successful."}, status=status.HTTP_200_OK)
 
-
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -117,16 +118,86 @@ class RedoView(APIView):
 Check Sudoku Game API View
 """
 class CheckSudokuView(APIView):
-    pass
+    def get(self, request):
+        try:
+            id = request.data.get('board_id')
+            board = SudokuBoard.objects.get(pk=id)
+            res = checkBoard(board)
+            return Response({
+                "detail": "Checked board successful.",
+                "res": res
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 """
 Note API View
 """
-class NoteView(APIView):
-    pass
+class NoteView(APIView):    
+    def post(self, request):
+        try:
+            id = request.data.get('board_id')
+            x = request.data.get('x')
+            y = request.data.get('y')
+            value = request.data.get('value')
+
+            if not all([id, x, y, value]):
+                return Response(
+                    {"detail": "Missing parameters."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            board = SudokuBoard.objects.get(pk=id)
+
+            note, created = NoteHistory.objects.update_or_create(
+                sudoku_board=board,
+                x=x,
+                y=y,
+                defaults={'value': value}
+            )
+
+            if created:
+                return Response(
+                    {"detail": "Note created successfully."},
+                    status=status.HTTP_201_CREATED
+                )
+            else:
+                return Response(
+                    {"detail": "Note updated successfully."},
+                    status=status.HTTP_200_OK
+                )
+
+        except SudokuBoard.DoesNotExist:
+            return Response(
+                {"detail": "SudokuBoard not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 """
 Hint API View
 """
 class HintView(APIView):
-    pass
+    def post(self, request):
+        try:
+            id = request.data.get('board_id')
+            board = SudokuBoard.objects.get(pk=id)
+            hint = get_hint(board)
+            
+            # No hint available
+            if hint is None:
+                return Response(
+                {"detail": "No hints available."},
+                status=status.HTTP_200_OK)
+            
+            hint_x, hint_y, value = hint
+            return Response(
+                {"x": hint_x, "y": hint_y, "value": value},
+                status=status.HTTP_200_OK
+            )
+                
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

@@ -1,6 +1,6 @@
 from django.urls import path
-from sudoku.views.sudokuBoardView import SudokuBoardView
-from sudoku.views.userActionView import *
+from sudoku.views.sudoku_board_views import SudokuBoardView
+from sudoku.views.user_action_views import *
 
 
 urlpatterns = [

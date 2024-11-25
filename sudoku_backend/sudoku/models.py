@@ -37,3 +37,11 @@ class NoteHistory(models.Model):
     x = models.PositiveBigIntegerField()
     y = models.PositiveBigIntegerField()
     value = models.IntegerField()
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['x', 'y'],
+                name='unique_note_per_position'
+            )
+        ]

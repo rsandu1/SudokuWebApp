@@ -9,7 +9,12 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useSudoku } from '../../context/SudokuContext';
 
 const LowerMenu = () => {
-    const { undo } = useSudoku();
+    const { undo, redo, inNote, setInNote, checkBoard } = useSudoku();
+
+    const handleInNote = () => {
+        setInNote(!inNote);
+    };
+
     return (
         <Box
             sx={{
@@ -37,6 +42,7 @@ const LowerMenu = () => {
                     variant="contained"
                     color="primary"
                     startIcon={<RedoIcon />}
+                    onClick={redo}
                 >
                     Redo
                 </Button>
@@ -50,20 +56,12 @@ const LowerMenu = () => {
                     Hint
                 </Button>
 
-                {/* Note */}
-                {/* <Button
-                    variant="contained"
-                    color="warning"
-                    startIcon={<NoteAddIcon />}
-                >
-                    Note
-                </Button> */}
-
                 {/* Check Sudoku */}
                 <Button
                     variant="contained"
                     color="success"
                     startIcon={<CheckCircleIcon />}
+                    onClick={checkBoard}
                 >
                     Check Sudoku
                 </Button>
@@ -74,7 +72,10 @@ const LowerMenu = () => {
                     paddingBottom: 1
                 }}>
                     <FormControlLabel
-                        control={<Switch color="primary" />}
+                        control={<Switch
+                            checked={inNote}
+                            onChange={handleInNote}
+                            color="primary" />}
                         label={
                             <Box display="flex" alignItems="center" gap={1}>
                                 <NoteAddIcon />

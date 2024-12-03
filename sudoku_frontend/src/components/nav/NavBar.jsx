@@ -10,7 +10,7 @@ const NavBar = () => {
         setDifficulty(e.target.value);
     };
 
-    // Start Game Function
+    // Handle dialogue states.
     const [open, setOpen] = useState(false);
 
     const handleOpen = () => {
@@ -21,13 +21,20 @@ const NavBar = () => {
         setOpen(false);
     };
 
-    const handleConfirm = () => {
+    // Handle confirm start game
+    const handleConfirmNewGame = () => {
         startGame();
         setTimer(0);
         setInGame(true);
         setOpen(false);
         setIsPaused(false);
         setCurDifficulty(difficulty);
+    };
+
+    // Handle confirm retrieve game
+    const handleConfirmRetrieveGame = () => {
+        console.log('Clicked Retrieve');
+        setOpen(false);
     };
 
     return (
@@ -55,7 +62,7 @@ const NavBar = () => {
                             <NavDropdown
                                 title="New Game"
                                 id="offcanvasNavbarDropdown-expand-sm"
-                            >   
+                            >
                                 {/* Difficulty Selection */}
                                 <NavDropdown.Item>
                                     <div onClick={(e) => e.stopPropagation()}>
@@ -89,19 +96,62 @@ const NavBar = () => {
                                         <DialogTitle>Start Game</DialogTitle>
                                         <DialogContent>
                                             <DialogContentText>
-                                                Are you sure you want to start a new game? This will overwrite the current progress.
+                                                {inGame ? 'Are you sure you want to start a new game? This will overwrite the current progress.'
+                                                : 'Are you sure you want to start a new game?'}
                                             </DialogContentText>
                                         </DialogContent>
                                         <DialogActions>
                                             <Button onClick={handleClose} color="primary">
                                                 Cancel
                                             </Button>
-                                            <Button onClick={handleConfirm} color="grey" autoFocus>
+                                            <Button onClick={handleConfirmNewGame} color="grey" autoFocus>
                                                 Yes
                                             </Button>
                                         </DialogActions>
                                     </Dialog>
                                 </div>
+                            </NavDropdown>
+                            <NavDropdown
+                                title="Retrieve Game"
+                                id="offcanvasNavbarDropdown-expand-sm"
+                            >
+                                <NavDropdown.Item>
+                                    <div onClick={(e) => e.stopPropagation()}>
+                                        <Form.Group className="mb-3" controlId="formBasicEmail">
+                                            <Form.Control type="email" placeholder="Board ID" />
+                                        </Form.Group>
+                                    </div>
+
+                                    <NavDropdown.Item>
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={handleOpen}
+                                        >
+                                            Retrieve Game
+                                        </Button>
+                                    </NavDropdown.Item>
+
+                                    {/* Warning Message to confirm retrieve game */}
+                                    <div>
+                                        <Dialog open={open} onClose={handleClose}>
+                                            <DialogTitle>Retrieve Game</DialogTitle>
+                                            <DialogContent>
+                                                <DialogContentText>
+                                                    Are you sure you want to retrieve the game? This will overwrite the current progress.
+                                                </DialogContentText>
+                                            </DialogContent>
+                                            <DialogActions>
+                                                <Button onClick={handleClose} color="primary">
+                                                    Cancel
+                                                </Button>
+                                                <Button onClick={handleConfirmRetrieveGame} color="grey" autoFocus>
+                                                    Yes
+                                                </Button>
+                                            </DialogActions>
+                                        </Dialog>
+                                    </div>
+                                </NavDropdown.Item>
                             </NavDropdown>
                         </Nav>
                     </Offcanvas.Body>
@@ -110,7 +160,6 @@ const NavBar = () => {
         </Navbar>
     );
 };
-
 
 
 export default NavBar;

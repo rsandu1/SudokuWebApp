@@ -8,13 +8,16 @@ export const SudokuProvider = ({ children }) => {
     const boardType = [[9, 40], [9, 20], [4, 12]]; // Board length + cells to fill
 
     const [board, setBoard] = useState(defaultBoard);
+    const [incorrectCells, setIncorrectCells] = useState([]);
     const [difficulty, setDifficulty] = useState(0);
+    const [inNote, setInNote] = useState(false);
     const [isPaused, setIsPaused] = useState(true);
     const [inGame, setInGame] = useState(false);
     const [timer, setTimer] = useState(0);
     const [curDifficulty, setCurDifficulty] = useState(0);
     const boardTypeText = ["9x9 40", "9x9 20", "4x4 12"];
-    const [boardID, setBoardID] = useState(0)
+    const [boardID, setBoardID] = useState(0);
+    const [isSolved, setIsSolved] = useState(true);
 
     // Convert the board string into a 2D array
     const parseBoard = (boardString) => {
@@ -23,10 +26,11 @@ export const SudokuProvider = ({ children }) => {
             Array.from({ length: size }, (_, colIndex) => ({
                 value: Number(boardString[rowIndex * size + colIndex]),
                 isEditable: boardString[rowIndex * size + colIndex] === '0', // Editable if the value is 0
+                note: 0
             })));
     };
 
-    // [GET] Request, send board type and render
+    // Send request to generate a new game
     const startGame = () => {
         axios.post('/api/sudoku/board',
             {
@@ -38,7 +42,8 @@ export const SudokuProvider = ({ children }) => {
                 if (response.data && response.data.board) {
                     const parsedBoard = parseBoard(response.data.board);
                     setBoard(parsedBoard);
-                    setBoardID(response.data.board_id)
+                    setBoardID(response.data.board_id);
+                    setIsSolved(false);
                 } else {
                     throw new Error('Invalid response data');
                 }
@@ -48,32 +53,106 @@ export const SudokuProvider = ({ children }) => {
             });
     }
 
-    // Function to update the board and store its history
-    const updateBoard = (row, col, newValue) => {
-        const newBoard = board.map((r, rowIndex) =>
-            r.map((cell, colIndex) =>
-                rowIndex === row && colIndex === col
-                    ? { ...cell, value: newValue }
-                    : cell
-            )
-        );
-        setBoard(newBoard);
+    // Function to update the board and store information to server
+    const updateBoard = async (row, col, newValue) => {
+        if (inGame) {
+            const endpoint = inNote ? '/api/sudoku/note' : '/api/sudoku/input';
+            const payload = {
+                board_id: boardID,
+                row: row,
+                col: col,
+                value: newValue,
+            };
+            try {
+                await axios.post(endpoint, payload);
+                const newBoard = board.map((r, rowIndex) =>
+                    r.map((cell, colIndex) =>
+                        rowIndex === row && colIndex === col
+                            ? inNote
+                                ? { ...cell, note: newValue } // Update note if inNote is true
+                                : { ...cell, value: newValue } // Update value otherwise
+                            : cell
+                    )
+                );
+                setBoard(newBoard);
+                setIncorrectCells((prev) => prev.filter(cell => !(cell.row === row && cell.col === col)));
+            }
+            catch (error) {
+                console.error('Failed to update the board on the server:', error);
+            }
+        }
     };
 
     // Function to undo the last change
     const undo = () => {
+        if (inGame){
+            axios.post('/api/sudoku/undo', {board_id: boardID}
+            )
+                .then((response) => {
+                    const newBoard = board.map(r => [...r]);
+                    newBoard[response.data.row][response.data.col].value = response.data.previous_value;
+                    setBoard(newBoard);
+                })
+                .catch((error) => {
+                    console.log('Error undoing:', error);
+                });
+        }
+    };
+
+    const redo = () => {
+        if (inGame){
+            axios.post('/api/sudoku/redo', {board_id: boardID}
+            )
+                .then((response) => {
+                    const newBoard = board.map(r => [...r]);
+                    console.log(response.data.new_value);
+                    newBoard[response.data.row][response.data.col].value = response.data.new_value;
+                    setBoard(newBoard);
+                })
+                .catch((error) => {
+                    console.log('Error undoing:', error);
+                });
+        }
+    };
+
+    const getHint = () => {
+        if (inGame){
+            
+        }
+    };
+
+    const checkBoard = async () => {
+        try {
+            const response = await axios.post('/api/sudoku/check', { board_id: boardID });
+            if (response.data) {
+                if (response.data.isSolved){
+                    setIsSolved(true);
+                    setInGame(false);
+                }else if(Array.isArray(response.data.incorrectCells)){
+                    setIncorrectCells(response.data.incorrectCells);
+                }
+            } else {
+                console.error('Unexpected response format:', response.data);
+            }
+        } catch (error) {
+            console.error('Failed to check the board:', error);
+        }
     };
 
     return (
         <SudokuContext.Provider value={{
             board, boardID,
-            updateBoard, undo, 
-            difficulty, setDifficulty, startGame, 
+            updateBoard, 
+            undo, redo, 
+            difficulty, setDifficulty, startGame,
+            inNote, setInNote,
             isPaused, setIsPaused,
             inGame, setInGame,
+            isSolved, setIsSolved,
             timer, setTimer,
             boardTypeText,
-            curDifficulty, setCurDifficulty
+            curDifficulty, setCurDifficulty,
+            checkBoard, incorrectCells
         }}>
             {children}
         </SudokuContext.Provider>

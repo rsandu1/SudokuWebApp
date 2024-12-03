@@ -53,6 +53,24 @@
     color: rgb(0, 119, 158);
 }
 
+.sudoku-cell-note.editable {
+    background-color: #f9f9ff;
+    color: #ED6C02;
+}
+
+/* Theme for incorrect cell */
+.sudoku-cell-incorrect {
+    animation: blink 1s infinite;
+    background-color: #f8d7da;
+    color: #dc3545 !important;
+}
+
+@keyframes blink {
+    50% {
+        background-color: #f5c6cb;
+    }
+}
+
 .sudoku-cell:focus {
     border: 2pt solid #007bff;
     /* box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); */

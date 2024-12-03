@@ -107,7 +107,7 @@ class RedoView(APIView):
             board_array = list(board.userBoard)
             board_size = 9 if len(board_array) == 81 else 4
             index = last_action.row * board_size + last_action.col
-            board_array[index] = str(last_action.previous_value)
+            board_array[index] = str(last_action.new_value)
             board.userBoard = ''.join(board_array)
             board.save()
             last_action.undone = False

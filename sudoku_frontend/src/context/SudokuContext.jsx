@@ -44,6 +44,7 @@ export const SudokuProvider = ({ children }) => {
                     setBoard(parsedBoard);
                     setBoardID(response.data.board_id);
                     setIsSolved(false);
+                    setIncorrectCells([]);
                 } else {
                     throw new Error('Invalid response data');
                 }

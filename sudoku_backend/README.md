@@ -12,6 +12,8 @@
 
 3. Get database ready
     ```bash
+    python manage.py makemigrations sudoku
+    python manage.py migrate sudoku
     python manage.py makemigrations
     python manage.py migrate
     ```

@@ -36,6 +36,7 @@ class SudokuBoardView(APIView):
         try: 
             id = int(request.data.get('board_id'))
             board = SudokuBoard.objects.get(board_id=id)
-            return Response({"board": board.board}, status=status.HTTP_200_OK)
+            return Response({"board": board.board,
+                             "user_board": board.userBoard}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

@@ -13,16 +13,16 @@ class InputView(APIView):
     def post(self, request):
         try:
             id = request.data.get('board_id')
-            x = request.data.get('x')
-            y = request.data.get('y')
+            row = request.data.get('row')
+            col = request.data.get('col')
             new_value = request.data.get('value')
             board = SudokuBoard.objects.get(pk=id)
             board_size = 9 if len(board.userBoard) == 81 else 4
 
-            if x is None or y is None or new_value is None:
+            if row is None or col is None or new_value is None:
                 return Response({"detail": "Missing input parameters."}, status=status.HTTP_400_BAD_REQUEST)
 
-            if not (0 <= x < 9 and 0 <= y < 9):
+            if not (0 <= row < 9 and 0 <= col < 9):
                 return Response({"detail": "Invalid row or column index."}, status=status.HTTP_400_BAD_REQUEST)
 
             if not (0 <= new_value <= board_size):
@@ -33,7 +33,7 @@ class InputView(APIView):
                 sudoku_board=board, undone=True).delete()
 
             # Update user input board
-            index = x * board_size + y
+            index = row * board_size + col
             previous_value = int(board.userBoard[index])
             user_board_array = list(board.userBoard)
             user_board_array[index] = str(new_value)
@@ -42,8 +42,8 @@ class InputView(APIView):
 
             ActionHistory.objects.create(
                 sudoku_board=board,
-                x=x,
-                y=y,
+                row=row,
+                col=col,
                 previous_value=previous_value,
                 new_value=new_value
             )
@@ -75,14 +75,18 @@ class UndoView(APIView):
             # Update Userboard
             board_array = list(board.userBoard)
             board_size = 9 if len(board_array) == 81 else 4
-            index = last_action.x * board_size + last_action.y
+            index = last_action.row * board_size + last_action.col
             board_array[index] = str(last_action.previous_value)
             board.userBoard = ''.join(board_array)
             board.save()
             # Set history as undone
             last_action.undone = True
             last_action.save()
-            return Response({"detail": "Undo successful."}, status=status.HTTP_200_OK)
+            return Response({"detail": "Undo successful.",
+                            "row": last_action.row,
+                            "col": last_action.col,
+                            "previous_value": last_action.previous_value
+                             }, status=status.HTTP_200_OK)
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -96,20 +100,22 @@ class RedoView(APIView):
             id = request.data.get('board_id')
             board = SudokuBoard.objects.get(pk=id)
             last_action = board.history.filter(
-                undone=True).order_by('-timestamp').first()
-
+                undone=True).order_by('timestamp').first()
             if not last_action:
-                return Response({"detail": "No actions to undo."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"detail": "No actions to redo."}, status=status.HTTP_400_BAD_REQUEST)
 
             board_array = list(board.userBoard)
             board_size = 9 if len(board_array) == 81 else 4
-            index = last_action.x * board_size + last_action.y
+            index = last_action.row * board_size + last_action.col
             board_array[index] = str(last_action.previous_value)
             board.userBoard = ''.join(board_array)
             board.save()
             last_action.undone = False
             last_action.save()
-            return Response({"detail": "Redo successful."}, status=status.HTTP_200_OK)
+            return Response({"detail": "Redo successful.",
+                            "row": last_action.row,
+                            "col": last_action.col,
+                            "new_value": last_action.new_value}, status=status.HTTP_200_OK)
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -118,14 +124,16 @@ class RedoView(APIView):
 Check Sudoku Game API View
 """
 class CheckSudokuView(APIView):
-    def get(self, request):
+    def post(self, request):
         try:
             id = request.data.get('board_id')
             board = SudokuBoard.objects.get(pk=id)
-            res = checkBoard(board)
+            isSolved, incorrectCells = checkBoard(board)
+            
             return Response({
                 "detail": "Checked board successful.",
-                "res": res
+                "is_solved": isSolved,
+                "incorrectCells": incorrectCells
             }, status=status.HTTP_200_OK)
 
         except Exception as e:
@@ -138,11 +146,11 @@ class NoteView(APIView):
     def post(self, request):
         try:
             id = request.data.get('board_id')
-            x = request.data.get('x')
-            y = request.data.get('y')
+            row = request.data.get('row')
+            col = request.data.get('col')
             value = request.data.get('value')
 
-            if not all([id, x, y, value]):
+            if not all([id, row, col, value]):
                 return Response(
                     {"detail": "Missing parameters."},
                     status=status.HTTP_400_BAD_REQUEST
@@ -152,8 +160,8 @@ class NoteView(APIView):
 
             note, created = NoteHistory.objects.update_or_create(
                 sudoku_board=board,
-                x=x,
-                y=y,
+                row=row,
+                col=col,
                 defaults={'value': value}
             )
 
@@ -193,9 +201,9 @@ class HintView(APIView):
                 {"detail": "No hints available."},
                 status=status.HTTP_200_OK)
             
-            hint_x, hint_y, value = hint
+            hint_row, hint_col, value = hint
             return Response(
-                {"x": hint_x, "y": hint_y, "value": value},
+                {"row": hint_row, "col": hint_col, "value": value},
                 status=status.HTTP_200_OK
             )
                 

@@ -13,13 +13,13 @@ class SudokuBoard(models.Model):
         
 class ActionHistory(models.Model):
     # 1-1 relationship with board, delete all history when board is deleted
-    sudoku_board = models.OneToOneField(
+    sudoku_board = models.ForeignKey(
         SudokuBoard, 
         on_delete=models.CASCADE, 
         related_name='history',
     )
-    x = models.PositiveBigIntegerField()
-    y = models.PositiveBigIntegerField()
+    row = models.PositiveBigIntegerField()
+    col = models.PositiveBigIntegerField()
     previous_value = models.IntegerField()
     new_value = models.IntegerField()
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -29,19 +29,19 @@ class ActionHistory(models.Model):
         ordering = ['timestamp']
         
 class NoteHistory(models.Model):
-    sudoku_board = models.OneToOneField(
+    sudoku_board = models.ForeignKey(
         SudokuBoard, 
         on_delete=models.CASCADE, 
         related_name='note',
     )
-    x = models.PositiveBigIntegerField()
-    y = models.PositiveBigIntegerField()
+    row = models.PositiveBigIntegerField()
+    col = models.PositiveBigIntegerField()
     value = models.IntegerField()
     
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['x', 'y'],
+                fields=['row', 'col'],
                 name='unique_note_per_position'
             )
         ]

@@ -1,15 +1,15 @@
 import random
 
 def get_hint(board):
-    board = board.board
+    sudoku_board = board.board
     user_board = board.userBoard
     solution = board.solution
 
     combined_board = []
     
-    for i in range(len(board)):
+    for i in range(len(sudoku_board)):
         if user_board[i] == '0':
-            combined_board.append(board[i])
+            combined_board.append(sudoku_board[i])
         else:
             combined_board.append(user_board[i])
             
@@ -31,7 +31,3 @@ def get_hint(board):
         hint_y = int(hint_index % size)
         value = solution[hint_index]
         return hint_x, hint_y, value
-    
-    
-    
-    

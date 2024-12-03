@@ -25,12 +25,11 @@ def checkBoard(board):
         return is_solved, invalid_entries
 
     user_board_2d = [combined_board[i * size:(i + 1) * size] for i in range(size)]
-    
     # Validate each entry
     for row in range(size):
         for col in range(size):
             num = user_board_2d[row][col]
-            if num != '0' and num != solution[(row)*size + col]:  # Only validate non-empty cells
+            if num != '0' and num != sudoku_board[(row)*size + col]:  # Only validate non-empty cells
                 if not is_valid(user_board_2d, row, col, num, size):
                     invalid_entries.append({
                         "row": row,

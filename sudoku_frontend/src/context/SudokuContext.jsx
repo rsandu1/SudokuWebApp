@@ -117,10 +117,69 @@ export const SudokuProvider = ({ children }) => {
     };
 
     const getHint = () => {
-        if (inGame){
-            
+        if (inGame) {
+            // Gather all editable and empty cells
+            const editableCells = [];
+            for (let row = 0; row < board.length; row++) {
+                for (let col = 0; col < board[row].length; col++) {
+                    if (board[row][col].isEditable && board[row][col].value === -1) {
+                        editableCells.push({ row, col });
+                    }
+                }
+            }
+    
+            if (editableCells.length === 0) {
+                console.log("No editable cells available for a hint.");
+                return;
+            }
+    
+            // Choose a random editable cell
+            const randomCell = editableCells[Math.floor(Math.random() * editableCells.length)];
+    
+            // Fetch the correct value for the chosen cell (you may need a helper for this)
+            const correctValue = calculateCorrectValue(board, randomCell.row, randomCell.col); // Assuming this helper exists
+    
+            if (correctValue !== null) {
+                // Update the board with the hint
+                const newBoard = [...board];
+                newBoard[randomCell.row][randomCell.col] = {
+                    ...newBoard[randomCell.row][randomCell.col],
+                    value: correctValue,
+                };
+                setBoard(newBoard);
+                console.log(`Hint applied to cell (${randomCell.row}, ${randomCell.col}): ${correctValue}`);
+            } else {
+                console.log("Could not determine the correct value for the hint.");
+            }
+        } else {
+            console.log("Game is not active.");
         }
     };
+    
+    // Helper function to calculate the correct value for a cell based on Sudoku rules
+    const calculateCorrectValue = (board, row, col) => {
+        // Logic to determine the correct value, ensuring no conflicts in the row, column, or grid
+        const possibleValues = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    
+        // Remove values already in the same row
+        board[row].forEach(cell => possibleValues.delete(cell.value));
+    
+        // Remove values already in the same column
+        board.forEach(row => possibleValues.delete(row[col].value));
+    
+        // Remove values already in the same 3x3 grid
+        const startRow = Math.floor(row / 3) * 3;
+        const startCol = Math.floor(col / 3) * 3;
+        for (let r = startRow; r < startRow + 3; r++) {
+            for (let c = startCol; c < startCol + 3; c++) {
+                possibleValues.delete(board[r][c].value);
+            }
+        }
+    
+        // Return a single possible value, or null if no value is valid
+        return possibleValues.size === 1 ? [...possibleValues][0] : null;
+    };
+    
 
     const checkBoard = async () => {
         try {

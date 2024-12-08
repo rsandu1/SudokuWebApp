@@ -47,7 +47,7 @@ const UpperMenu = () => {
                                 return "Easy";
                             } else if (difficultyText === "9x9 45") {
                                 return "Medium";
-                            } else if (difficultyText === "9x49 60") {
+                            } else if (difficultyText === "9x9 60") {
                                 return "Hard";
                             } else {
                                 return "Unknown";

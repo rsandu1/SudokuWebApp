@@ -5,7 +5,7 @@ const SudokuContext = createContext();
 
 export const SudokuProvider = ({ children }) => {
     const defaultBoard = Array.from({ length: 9 }, () => Array(9).fill(-1));
-    const boardType = [[9, 40], [9, 20], [4, 12]]; // Board length + cells to fill
+    const boardType = [[9, 25], [9, 45], [9, 60]]; // Board length + cells to fill
 
     const [board, setBoard] = useState(defaultBoard);
     const [incorrectCells, setIncorrectCells] = useState([]);
@@ -15,7 +15,7 @@ export const SudokuProvider = ({ children }) => {
     const [inGame, setInGame] = useState(false);
     const [timer, setTimer] = useState(0);
     const [curDifficulty, setCurDifficulty] = useState(0);
-    const boardTypeText = ["9x9 40", "9x9 20", "4x4 12"];
+    const boardTypeText = ["9x9 25", "9x9 45", "9x9 60"];
     const [boardID, setBoardID] = useState(0);
     const [isSolved, setIsSolved] = useState(true);
 

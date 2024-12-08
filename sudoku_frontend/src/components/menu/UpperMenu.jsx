@@ -40,7 +40,20 @@ const UpperMenu = () => {
 
                 {/* Difficulty */}
                 <Typography className='uppermenu-text' variant="h6">
-                    Difficulty : {boardTypeText[curDifficulty]}
+                    Difficulty : {
+                        (() => {
+                            const difficultyText = boardTypeText[curDifficulty];
+                            if (difficultyText === "9x9 25") {
+                                return "Easy";
+                            } else if (difficultyText === "9x9 45") {
+                                return "Medium";
+                            } else if (difficultyText === "9x49 60") {
+                                return "Hard";
+                            } else {
+                                return "Unknown";
+                            }
+                        })()
+                    }
                 </Typography>
 
                 {/* Timer */}

@@ -72,9 +72,9 @@ const NavBar = () => {
                                             aria-label="Difficulty Select"
                                             style={{ minWidth: '120px' }}
                                         >
-                                            <option value="0">9x9 40</option>
-                                            <option value="1">9x9 20</option>
-                                            <option value="2">4x4 12</option>
+                                            <option value="0">Easy</option>
+                                            <option value="1">Medium</option>
+                                            <option value="2">Hard</option>
                                         </Form.Select>
                                     </div>
                                 </NavDropdown.Item>

@@ -96,7 +96,7 @@ function SudokuBoard() {
             </tbody>
         </table>
 
-        <Dialog open={isSolved && inGame} onClose={handleCloseDialog}>
+        <Dialog open={isSolved} onClose={handleCloseDialog}>
                 <DialogTitle>Game Completed</DialogTitle>
                 <DialogContent>
                     Congratulations! You have successfully completed the Sudoku puzzle.

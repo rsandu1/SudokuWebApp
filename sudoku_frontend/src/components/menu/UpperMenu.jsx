@@ -11,7 +11,7 @@ const UpperMenu = () => {
 
     useEffect(() => {
         let interval = null;
-        if (!isPaused) {
+        if (!isPaused && inGame) {
             interval = setInterval(() => {
                 setTimer((prevTimer) => prevTimer + 1);
             }, 1000);
@@ -19,7 +19,7 @@ const UpperMenu = () => {
             clearInterval(interval);
         }
         return () => clearInterval(interval);
-    }, [isPaused]);
+    }, [isPaused, inGame]);
 
     return (
         <Box

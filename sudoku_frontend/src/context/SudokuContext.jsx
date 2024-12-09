@@ -17,12 +17,12 @@ export const SudokuProvider = ({ children }) => {
     const [curDifficulty, setCurDifficulty] = useState(0);
     const boardTypeText = ["9x9 25", "9x9 45", "9x9 60"];
     const [boardID, setBoardID] = useState(0);
-    const [isSolved, setIsSolved] = useState(true);
+    const [isSolved, setIsSolved] = useState(false);
 
     const getSpecificHint = () => {
         let current = board[currentCell.row][currentCell.col]
         console.log(current)
-        if (inGame && current.isEditable) { 
+        if (inGame && !isPaused && current.isEditable) { 
             axios.post('/api/sudoku/specifichint', {board_id: boardID, row: currentCell.row, col: currentCell.col}
             )
                 .then((response) => {
@@ -33,8 +33,7 @@ export const SudokuProvider = ({ children }) => {
                         newBoard[response.data.row][response.data.col].value = parseInt(response.data.value);
                         newBoard[response.data.row][response.data.col].isEditable = false; 
                         newBoard[response.data.row][response.data.col].isHint = true; 
-                        setBoard(newBoard);
-                        console.log(newBoard)
+                        updateBoard(response.data.row, response.data.col, parseInt(response.data.value))
                     } else {
                         throw new Error('Invalid response data');
                     }
@@ -46,25 +45,26 @@ export const SudokuProvider = ({ children }) => {
     }
 
     const getHint = () => {
-        axios.post('/api/sudoku/hint', {board_id: boardID}
-        )
-            .then((response) => {
-                console.log(response)
-                if (response.data) {
-              
-                    const newBoard = board.map(r => [...r]);
-                    newBoard[response.data.row][response.data.col].value = parseInt(response.data.value);
-                    newBoard[response.data.row][response.data.col].isEditable = false; 
-                    newBoard[response.data.row][response.data.col].isHint = true; 
-                    setBoard(newBoard);
-                    console.log(newBoard)
-                } else {
-                    throw new Error('Invalid response data');
-                }
-            })
-            .catch((error) => {
-                console.log('Error getting a random hint:', error);
-            });
+        if (inGame && !isPaused) {
+            axios.post('/api/sudoku/hint', {board_id: boardID}
+            )
+                .then((response) => {
+                    console.log(response)
+                    if (response.data) {
+                
+                        const newBoard = board.map(r => [...r]);
+                        newBoard[response.data.row][response.data.col].value = parseInt(response.data.value);
+                        newBoard[response.data.row][response.data.col].isEditable = false; 
+                        newBoard[response.data.row][response.data.col].isHint = true; 
+                        updateBoard(response.data.row, response.data.col, parseInt(response.data.value))
+                    } else {
+                        throw new Error('Invalid response data');
+                    }
+                })
+                .catch((error) => {
+                    console.log('Error getting a random hint:', error);
+                });
+        }
     }
 
 
@@ -136,7 +136,7 @@ export const SudokuProvider = ({ children }) => {
 
     // Function to undo the last change
     const undo = () => {
-        if (inGame){
+        if (inGame && !isPaused){
             axios.post('/api/sudoku/undo', {board_id: boardID}
             )
                 .then((response) => {
@@ -151,7 +151,7 @@ export const SudokuProvider = ({ children }) => {
     };
 
     const redo = () => {
-        if (inGame){
+        if (inGame && !isPaused){
             axios.post('/api/sudoku/redo', {board_id: boardID}
             )
                 .then((response) => {
@@ -167,20 +167,23 @@ export const SudokuProvider = ({ children }) => {
     };
 
     const checkBoard = async () => {
-        try {
-            const response = await axios.post('/api/sudoku/check', { board_id: boardID });
-            if (response.data) {
-                if (response.data.isSolved){
-                    setIsSolved(true);
-                    setInGame(false);
-                }else if(Array.isArray(response.data.incorrectCells)){
-                    setIncorrectCells(response.data.incorrectCells);
+        if (inGame && !isPaused) { 
+            try {
+                const response = await axios.post('/api/sudoku/check', { board_id: boardID });
+                if (response.data) {
+                    if (response.data.is_solved){
+                        setIsSolved(true);
+                        console.log("hi")
+                        setInGame(false);
+                    }else if(Array.isArray(response.data.incorrectCells)){
+                        setIncorrectCells(response.data.incorrectCells);
+                    }
+                } else {
+                    console.error('Unexpected response format:', response.data);
                 }
-            } else {
-                console.error('Unexpected response format:', response.data);
+            } catch (error) {
+                console.error('Failed to check the board:', error);
             }
-        } catch (error) {
-            console.error('Failed to check the board:', error);
         }
     };
 

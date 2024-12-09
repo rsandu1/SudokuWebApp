@@ -36,7 +36,6 @@ def get_hint(board):
 def get_specific_hint(board, row, col):
     solution = board.solution
     user_board = board.userBoard
-    
     size = 9 if len(user_board) == 81 else 4
     hint_index = row * size + col
     

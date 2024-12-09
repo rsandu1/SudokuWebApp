@@ -58,6 +58,10 @@
     color: rgb(0, 176, 82);
 }
 
+.sudoku-cell-note {
+    background-color: #f9f9ff;
+    color: #ED6C02;
+}
 .sudoku-cell-note.editable {
     background-color: #f9f9ff;
     color: #ED6C02;

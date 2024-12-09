@@ -35,10 +35,19 @@ function SudokuBoard() {
     }, [currentCell]); // Dependency array ensures it runs when `currentCell` changes
 
     const handleNoteDisplay = (cell) =>{
-        if (inNote && cell.isEditable && cell.note !== 0){
-            return cell.note;
-        }else{
-            return cell.value && cell.value !== 0 && cell.value !== -1 ? cell.value : '';
+        // if (inNote && cell.isEditable && cell.note !== 0){
+        //     return cell.note;
+        // }else{
+        //     return cell.value && cell.value !== 0 && cell.value !== -1 ? cell.value : '';
+        // }
+        if (cell.value && cell.value !== 0 && cell.value !== -1) { 
+            return cell.value;
+        }
+        else if (cell.note !== 0) { 
+            return cell.note; 
+        }
+        else { 
+            return '';
         }
     };
 
@@ -73,7 +82,7 @@ function SudokuBoard() {
                                     ${cell.isEditable ? 'editable' : ''} 
                                     ${cell.isHint ? 'hint' : ''} 
                                     ${subGridSize === 4 ? 'sub-cell-2' : 'sub-cell-3'} 
-                                    ${inNote && cell.note !== 0 ? 'sudoku-cell-note' : ''} 
+                                    ${cell.note !== 0 && cell.value == 0? 'sudoku-cell-note' : ''} 
                                     ${isCellIncorrect(rowIndex, colIndex) ? 'sudoku-cell-incorrect' : ''}`}
                                 tabIndex="0"
                                 onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}

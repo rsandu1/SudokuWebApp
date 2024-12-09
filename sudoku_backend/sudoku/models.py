@@ -38,10 +38,10 @@ class NoteHistory(models.Model):
     col = models.PositiveBigIntegerField()
     value = models.IntegerField()
     
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['row', 'col'],
-                name='unique_note_per_position'
-            )
-        ]
+    # class Meta:
+    #     constraints = [
+    #         models.UniqueConstraint(
+    #             fields=['row', 'col'],
+    #             name='unique_note_per_position'
+    #         )
+    #     ]

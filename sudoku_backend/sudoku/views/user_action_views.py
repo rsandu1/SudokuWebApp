@@ -150,11 +150,11 @@ class NoteView(APIView):
             col = request.data.get('col')
             value = request.data.get('value')
 
-            if not all([id, row, col, value]):
-                return Response(
-                    {"detail": "Missing parameters."},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+            # if not all([id, row, col, value]):
+            #     return Response(
+            #         {"detail": "Missing parameters."},
+            #         status=status.HTTP_400_BAD_REQUEST
+            #     )
 
             board = SudokuBoard.objects.get(pk=id)
 

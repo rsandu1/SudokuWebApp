@@ -54,7 +54,7 @@ const LowerMenu = () => {
                     startIcon={<LightbulbIcon />}
                     onClick={getHint}
                 >
-                    Hint
+                    Random Hint
                 </Button>
 
                 {/* Specific hint */}
@@ -64,7 +64,7 @@ const LowerMenu = () => {
                     startIcon={<LightbulbIcon />}
                     onClick={getSpecificHint}
                 >
-                    Reveal cell
+                    Specific Hint
                 </Button>
 
                 {/* Check Sudoku */}

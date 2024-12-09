@@ -32,3 +32,13 @@ def get_hint(board):
         hint_y = int(hint_index % size)
         value = solution[hint_index]
         return hint_x, hint_y, value
+    
+def get_specific_hint(board, row, col):
+    solution = board.solution
+    user_board = board.userBoard
+    
+    size = 9 if len(user_board) == 81 else 4
+    hint_index = row * size + col
+    
+    value = solution[hint_index]
+    return row, col, value

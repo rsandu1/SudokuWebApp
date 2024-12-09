@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect } from 'react';
 import PauseIcon from '@mui/icons-material/Pause';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -10,10 +10,9 @@ import './SudokuBoard.css';
 import { useSudoku } from '../../context/SudokuContext';
 
 function SudokuBoard() {
-    const { board, updateBoard, isPaused, inGame, isSolved, setIsSolved, inNote, incorrectCells } = useSudoku();
+    const { board, updateBoard, isPaused, inGame, isSolved, setIsSolved, inNote, incorrectCells, setCurrentCell, currentCell} = useSudoku();
 
     const subGridSize = board.length;
-
     // Event Handler for user actions
     const handleKeyDown = (event, row, col) => {
         if (!isPaused && board[row][col].isEditable) {
@@ -24,6 +23,16 @@ function SudokuBoard() {
             }
         }
     };
+
+    const handleClick = (event, row, col) => {
+        if (!isPaused) {
+           setCurrentCell({row: row, col: col})
+        }
+    };
+
+    useEffect(() => {
+        console.log("Updated currentCell:", currentCell);
+    }, [currentCell]); // Dependency array ensures it runs when `currentCell` changes
 
     const handleNoteDisplay = (cell) =>{
         if (inNote && cell.isEditable && cell.note !== 0){
@@ -68,6 +77,7 @@ function SudokuBoard() {
                                     ${isCellIncorrect(rowIndex, colIndex) ? 'sudoku-cell-incorrect' : ''}`}
                                 tabIndex="0"
                                 onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}
+                                onClick={(e) => handleClick(e, rowIndex, colIndex)}
                             >
                                 {handleNoteDisplay(cell)}
                             </td>

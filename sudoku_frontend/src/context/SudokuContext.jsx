@@ -6,7 +6,7 @@ const SudokuContext = createContext();
 export const SudokuProvider = ({ children }) => {
     const defaultBoard = Array.from({ length: 9 }, () => Array(9).fill(-1));
     const boardType = [[9, 25], [9, 45], [9, 60]]; // Board length + cells to fill
-
+    const [currentCell, setCurrentCell] = useState({row: -1, col: -1})
     const [board, setBoard] = useState(defaultBoard);
     const [incorrectCells, setIncorrectCells] = useState([]);
     const [difficulty, setDifficulty] = useState(0);
@@ -18,6 +18,32 @@ export const SudokuProvider = ({ children }) => {
     const boardTypeText = ["9x9 25", "9x9 45", "9x9 60"];
     const [boardID, setBoardID] = useState(0);
     const [isSolved, setIsSolved] = useState(true);
+
+    const getSpecificHint = () => {
+        let current = board[currentCell.row][currentCell.col]
+        console.log(current)
+        if (inGame && current.isEditable) { 
+            axios.post('/api/sudoku/specifichint', {board_id: boardID, row: currentCell.row, col: currentCell.col}
+            )
+                .then((response) => {
+                    console.log(response)
+                    if (response.data) {
+                
+                        const newBoard = board.map(r => [...r]);
+                        newBoard[response.data.row][response.data.col].value = parseInt(response.data.value);
+                        newBoard[response.data.row][response.data.col].isEditable = false; 
+                        newBoard[response.data.row][response.data.col].isHint = true; 
+                        setBoard(newBoard);
+                        console.log(newBoard)
+                    } else {
+                        throw new Error('Invalid response data');
+                    }
+                })
+                .catch((error) => {
+                    console.log('Error getting a random hint:', error);
+                });
+        }
+    }
 
     const getHint = () => {
         axios.post('/api/sudoku/hint', {board_id: boardID}
@@ -41,46 +67,6 @@ export const SudokuProvider = ({ children }) => {
             });
     }
 
-    // const getHint = () => {
-    //     if (inGame) {
-    //         console.log("Hint")
-    //         // Gather all editable and empty cells
-    //         const editableCells = [];
-    //         for (let row = 0; row < board.length; row++) {
-    //             for (let col = 0; col < board[row].length; col++) {
-    //                 if (board[row][col].isEditable && board[row][col].value === -1) {
-    //                     editableCells.push({ row, col });
-    //                 }
-    //             }
-    //         }
-    
-    //         if (editableCells.length === 0) {
-    //             console.log("No editable cells available for a hint.");
-    //             return;
-    //         }
-    
-    //         // Choose a random editable cell
-    //         const randomCell = editableCells[Math.floor(Math.random() * editableCells.length)];
-    
-    //         // Fetch the correct value for the chosen cell (you may need a helper for this)
-    //         const correctValue = calculateCorrectValue(board, randomCell.row, randomCell.col); // Assuming this helper exists
-    
-    //         if (correctValue !== null) {
-    //             // Update the board with the hint
-    //             const newBoard = [...board];
-    //             newBoard[randomCell.row][randomCell.col] = {
-    //                 ...newBoard[randomCell.row][randomCell.col],
-    //                 value: correctValue,
-    //             };
-    //             setBoard(newBoard);
-    //             console.log(`Hint applied to cell (${randomCell.row}, ${randomCell.col}): ${correctValue}`);
-    //         } else {
-    //             console.log("Could not determine the correct value for the hint.");
-    //         }
-    //     } else {
-    //         console.log("Game is not active.");
-    //     }
-    // };
 
     // Convert the board string into a 2D array
     const parseBoard = (boardString) => {
@@ -180,71 +166,6 @@ export const SudokuProvider = ({ children }) => {
         }
     };
 
-    // const getHint = () => {
-    //     if (inGame) {
-    //         // Gather all editable and empty cells
-    //         const editableCells = [];
-    //         for (let row = 0; row < board.length; row++) {
-    //             for (let col = 0; col < board[row].length; col++) {
-    //                 if (board[row][col].isEditable && board[row][col].value === -1) {
-    //                     editableCells.push({ row, col });
-    //                 }
-    //             }
-    //         }
-    
-    //         if (editableCells.length === 0) {
-    //             console.log("No editable cells available for a hint.");
-    //             return;
-    //         }
-    
-    //         // Choose a random editable cell
-    //         const randomCell = editableCells[Math.floor(Math.random() * editableCells.length)];
-    
-    //         // Fetch the correct value for the chosen cell (you may need a helper for this)
-    //         const correctValue = calculateCorrectValue(board, randomCell.row, randomCell.col); // Assuming this helper exists
-    
-    //         if (correctValue !== null) {
-    //             // Update the board with the hint
-    //             const newBoard = [...board];
-    //             newBoard[randomCell.row][randomCell.col] = {
-    //                 ...newBoard[randomCell.row][randomCell.col],
-    //                 value: correctValue,
-    //             };
-    //             setBoard(newBoard);
-    //             console.log(`Hint applied to cell (${randomCell.row}, ${randomCell.col}): ${correctValue}`);
-    //         } else {
-    //             console.log("Could not determine the correct value for the hint.");
-    //         }
-    //     } else {
-    //         console.log("Game is not active.");
-    //     }
-    // };
-    
-    // Helper function to calculate the correct value for a cell based on Sudoku rules
-    const calculateCorrectValue = (board, row, col) => {
-        // Logic to determine the correct value, ensuring no conflicts in the row, column, or grid
-        const possibleValues = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-    
-        // Remove values already in the same row
-        board[row].forEach(cell => possibleValues.delete(cell.value));
-    
-        // Remove values already in the same column
-        board.forEach(row => possibleValues.delete(row[col].value));
-    
-        // Remove values already in the same 3x3 grid
-        const startRow = Math.floor(row / 3) * 3;
-        const startCol = Math.floor(col / 3) * 3;
-        for (let r = startRow; r < startRow + 3; r++) {
-            for (let c = startCol; c < startCol + 3; c++) {
-                possibleValues.delete(board[r][c].value);
-            }
-        }
-    
-        // Return a single possible value, or null if no value is valid
-        return possibleValues.size === 1 ? [...possibleValues][0] : null;
-    };
-    
-
     const checkBoard = async () => {
         try {
             const response = await axios.post('/api/sudoku/check', { board_id: boardID });
@@ -267,6 +188,7 @@ export const SudokuProvider = ({ children }) => {
         <SudokuContext.Provider value={{
             board, boardID,
             updateBoard, 
+            getSpecificHint,
             getHint,
             undo, redo, 
             difficulty, setDifficulty, startGame,
@@ -277,6 +199,7 @@ export const SudokuProvider = ({ children }) => {
             timer, setTimer,
             boardTypeText,
             curDifficulty, setCurDifficulty,
+            currentCell, setCurrentCell,
             checkBoard, incorrectCells
         }}>
             {children}

@@ -4,7 +4,7 @@ from rest_framework import status
 
 from sudoku.models import SudokuBoard, ActionHistory, NoteHistory
 from sudoku.services.check_board import checkBoard
-from sudoku.services.get_hint import get_hint
+from sudoku.services.get_hint import get_hint, get_specific_hint
 
 """
 User Input
@@ -194,6 +194,33 @@ class HintView(APIView):
             id = request.data.get('board_id')
             board = SudokuBoard.objects.get(pk=id)
             hint = get_hint(board)
+            
+            # No hint available
+            if hint is None:
+                return Response(
+                {"detail": "No hints available."},
+                status=status.HTTP_200_OK)
+            
+            hint_row, hint_col, value = hint
+            return Response(
+                {"row": hint_row, "col": hint_col, "value": value},
+                status=status.HTTP_200_OK
+            )
+                
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+"""
+Specific Hint API View
+"""
+class SpecificHintView(APIView):
+    def post(self, request):
+        try:
+            id = request.data.get('board_id')
+            row = request.data.get('row')
+            col = request.data.get('col')
+            board = SudokuBoard.objects.get(pk=id)
+            hint = get_specific_hint(board, row, col)
             
             # No hint available
             if hint is None:

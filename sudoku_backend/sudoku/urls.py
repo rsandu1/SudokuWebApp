@@ -10,5 +10,6 @@ urlpatterns = [
     path('sudoku/redo', RedoView.as_view(), name='sudoku-redo'),
     path('sudoku/check', CheckSudokuView.as_view(), name='sudoku-check'),
     path('sudoku/note', NoteView.as_view(), name='sudoku-note'),
-    path('sudoku/hint', HintView.as_view(), name='sudoku-hint')
+    path('sudoku/hint', HintView.as_view(), name='sudoku-hint'),
+    path('sudoku/specifichint', SpecificHintView.as_view(), name='sudoku-specific-hint')
 ]

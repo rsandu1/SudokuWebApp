@@ -18,9 +18,10 @@ def get_hint(board):
     random.shuffle(indices)
     
     hint_index = -1
-    
+
     for i in indices:
-        if(combined_board[i] != solution[i]):
+        print(combined_board[i])
+        if(combined_board[i] == '0'):
             hint_index = i
             break
     

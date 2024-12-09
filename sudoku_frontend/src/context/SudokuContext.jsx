@@ -19,6 +19,69 @@ export const SudokuProvider = ({ children }) => {
     const [boardID, setBoardID] = useState(0);
     const [isSolved, setIsSolved] = useState(true);
 
+    const getHint = () => {
+        axios.post('/api/sudoku/hint', {board_id: boardID}
+        )
+            .then((response) => {
+                console.log(response)
+                if (response.data) {
+              
+                    const newBoard = board.map(r => [...r]);
+                    newBoard[response.data.row][response.data.col].value = parseInt(response.data.value);
+                    newBoard[response.data.row][response.data.col].isEditable = false; 
+                    newBoard[response.data.row][response.data.col].isHint = true; 
+                    setBoard(newBoard);
+                    console.log(newBoard)
+                } else {
+                    throw new Error('Invalid response data');
+                }
+            })
+            .catch((error) => {
+                console.log('Error getting a random hint:', error);
+            });
+    }
+
+    // const getHint = () => {
+    //     if (inGame) {
+    //         console.log("Hint")
+    //         // Gather all editable and empty cells
+    //         const editableCells = [];
+    //         for (let row = 0; row < board.length; row++) {
+    //             for (let col = 0; col < board[row].length; col++) {
+    //                 if (board[row][col].isEditable && board[row][col].value === -1) {
+    //                     editableCells.push({ row, col });
+    //                 }
+    //             }
+    //         }
+    
+    //         if (editableCells.length === 0) {
+    //             console.log("No editable cells available for a hint.");
+    //             return;
+    //         }
+    
+    //         // Choose a random editable cell
+    //         const randomCell = editableCells[Math.floor(Math.random() * editableCells.length)];
+    
+    //         // Fetch the correct value for the chosen cell (you may need a helper for this)
+    //         const correctValue = calculateCorrectValue(board, randomCell.row, randomCell.col); // Assuming this helper exists
+    
+    //         if (correctValue !== null) {
+    //             // Update the board with the hint
+    //             const newBoard = [...board];
+    //             newBoard[randomCell.row][randomCell.col] = {
+    //                 ...newBoard[randomCell.row][randomCell.col],
+    //                 value: correctValue,
+    //             };
+    //             setBoard(newBoard);
+    //             console.log(`Hint applied to cell (${randomCell.row}, ${randomCell.col}): ${correctValue}`);
+    //         } else {
+    //             console.log("Could not determine the correct value for the hint.");
+    //         }
+    //     } else {
+    //         console.log("Game is not active.");
+    //     }
+    // };
+
     // Convert the board string into a 2D array
     const parseBoard = (boardString) => {
         let size = boardType[difficulty][0];
@@ -26,7 +89,8 @@ export const SudokuProvider = ({ children }) => {
             Array.from({ length: size }, (_, colIndex) => ({
                 value: Number(boardString[rowIndex * size + colIndex]),
                 isEditable: boardString[rowIndex * size + colIndex] === '0', // Editable if the value is 0
-                note: 0
+                note: 0, 
+                isHint: false
             })));
     };
 
@@ -116,45 +180,45 @@ export const SudokuProvider = ({ children }) => {
         }
     };
 
-    const getHint = () => {
-        if (inGame) {
-            // Gather all editable and empty cells
-            const editableCells = [];
-            for (let row = 0; row < board.length; row++) {
-                for (let col = 0; col < board[row].length; col++) {
-                    if (board[row][col].isEditable && board[row][col].value === -1) {
-                        editableCells.push({ row, col });
-                    }
-                }
-            }
+    // const getHint = () => {
+    //     if (inGame) {
+    //         // Gather all editable and empty cells
+    //         const editableCells = [];
+    //         for (let row = 0; row < board.length; row++) {
+    //             for (let col = 0; col < board[row].length; col++) {
+    //                 if (board[row][col].isEditable && board[row][col].value === -1) {
+    //                     editableCells.push({ row, col });
+    //                 }
+    //             }
+    //         }
     
-            if (editableCells.length === 0) {
-                console.log("No editable cells available for a hint.");
-                return;
-            }
+    //         if (editableCells.length === 0) {
+    //             console.log("No editable cells available for a hint.");
+    //             return;
+    //         }
     
-            // Choose a random editable cell
-            const randomCell = editableCells[Math.floor(Math.random() * editableCells.length)];
+    //         // Choose a random editable cell
+    //         const randomCell = editableCells[Math.floor(Math.random() * editableCells.length)];
     
-            // Fetch the correct value for the chosen cell (you may need a helper for this)
-            const correctValue = calculateCorrectValue(board, randomCell.row, randomCell.col); // Assuming this helper exists
+    //         // Fetch the correct value for the chosen cell (you may need a helper for this)
+    //         const correctValue = calculateCorrectValue(board, randomCell.row, randomCell.col); // Assuming this helper exists
     
-            if (correctValue !== null) {
-                // Update the board with the hint
-                const newBoard = [...board];
-                newBoard[randomCell.row][randomCell.col] = {
-                    ...newBoard[randomCell.row][randomCell.col],
-                    value: correctValue,
-                };
-                setBoard(newBoard);
-                console.log(`Hint applied to cell (${randomCell.row}, ${randomCell.col}): ${correctValue}`);
-            } else {
-                console.log("Could not determine the correct value for the hint.");
-            }
-        } else {
-            console.log("Game is not active.");
-        }
-    };
+    //         if (correctValue !== null) {
+    //             // Update the board with the hint
+    //             const newBoard = [...board];
+    //             newBoard[randomCell.row][randomCell.col] = {
+    //                 ...newBoard[randomCell.row][randomCell.col],
+    //                 value: correctValue,
+    //             };
+    //             setBoard(newBoard);
+    //             console.log(`Hint applied to cell (${randomCell.row}, ${randomCell.col}): ${correctValue}`);
+    //         } else {
+    //             console.log("Could not determine the correct value for the hint.");
+    //         }
+    //     } else {
+    //         console.log("Game is not active.");
+    //     }
+    // };
     
     // Helper function to calculate the correct value for a cell based on Sudoku rules
     const calculateCorrectValue = (board, row, col) => {
@@ -203,6 +267,7 @@ export const SudokuProvider = ({ children }) => {
         <SudokuContext.Provider value={{
             board, boardID,
             updateBoard, 
+            getHint,
             undo, redo, 
             difficulty, setDifficulty, startGame,
             inNote, setInNote,

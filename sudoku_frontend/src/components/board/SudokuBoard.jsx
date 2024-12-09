@@ -62,6 +62,7 @@ function SudokuBoard() {
                                 key={`${rowIndex}-${colIndex}`}
                                 className={`sudoku-cell 
                                     ${cell.isEditable ? 'editable' : ''} 
+                                    ${cell.isHint ? 'hint' : ''} 
                                     ${subGridSize === 4 ? 'sub-cell-2' : 'sub-cell-3'} 
                                     ${inNote && cell.note !== 0 ? 'sudoku-cell-note' : ''} 
                                     ${isCellIncorrect(rowIndex, colIndex) ? 'sudoku-cell-incorrect' : ''}`}

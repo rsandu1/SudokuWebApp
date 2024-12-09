@@ -9,7 +9,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useSudoku } from '../../context/SudokuContext';
 
 const LowerMenu = () => {
-    const { undo, redo, inNote, setInNote, checkBoard } = useSudoku();
+    const { undo, redo, inNote, setInNote, checkBoard, getHint } = useSudoku();
 
     const handleInNote = () => {
         setInNote(!inNote);
@@ -52,6 +52,7 @@ const LowerMenu = () => {
                     variant="contained"
                     color="info"
                     startIcon={<LightbulbIcon />}
+                    onClick={getHint}
                 >
                     Hint
                 </Button>

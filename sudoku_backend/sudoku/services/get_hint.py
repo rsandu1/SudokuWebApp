@@ -21,7 +21,7 @@ def get_hint(board):
 
     for i in indices:
         print(combined_board[i])
-        if(combined_board[i] == '0' or user_board[i] != solution[i]):
+        if(combined_board[i] == '0'):
             hint_index = i
             break
     

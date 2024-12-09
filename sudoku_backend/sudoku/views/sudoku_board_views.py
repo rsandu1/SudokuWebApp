@@ -34,7 +34,8 @@ class SudokuBoardView(APIView):
         GET: Fetch Sudoku board given id.
         """
         try: 
-            id = int(request.data.get('board_id'))
+            id = request.data.get('board_id')
+            print(id)
             board = SudokuBoard.objects.get(board_id=id)
             return Response({"board": board.board,
                              "user_board": board.userBoard}, status=status.HTTP_200_OK)

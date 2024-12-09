@@ -67,6 +67,17 @@ export const SudokuProvider = ({ children }) => {
         }
     }
 
+    // Convert the board string into a 2D array
+    const parseUserBoard = (boardString) => {
+        let size = boardType[difficulty][0];
+        return Array.from({ length: size }, (_, rowIndex) =>
+            Array.from({ length: size }, (_, colIndex) => ({
+                value: Number(boardString[rowIndex * size + colIndex]),
+                isEditable: true, // Editable if the value is 0
+                note: 0, 
+                isHint: false
+            })));
+    };
 
     // Convert the board string into a 2D array
     const parseBoard = (boardString) => {
@@ -93,6 +104,44 @@ export const SudokuProvider = ({ children }) => {
                     const parsedBoard = parseBoard(response.data.board);
                     setBoard(parsedBoard);
                     setBoardID(response.data.board_id);
+                    setIsSolved(false);
+                    setIncorrectCells([]);
+                } else {
+                    throw new Error('Invalid response data');
+                }
+            })
+            .catch((error) => {
+                console.log('Error starting the game:', error);
+            });
+    }
+
+    // Send request to retrieve a game
+    const retrieveGame = (board_id) => {
+        console.log("Retrieving: ", board_id)
+        axios.get('/api/sudoku/retrieve/' + board_id + '/'
+        )
+            .then((response) => {
+                if (response.data) {
+                    const parsedBoard = parseBoard(response.data.board);
+                    const parsedUserBoard = parseUserBoard(response.data.user_board);
+                    // console.log(parsedUserBoard)
+                    // parsedUserBoard.forEach((row, rowIndex) => {
+                    //     row.forEach((cell, colIndex) => {
+                    //         console.log(`Row: ${rowIndex}, Col: ${colIndex}, Value:`, cell);
+                    //         parsedBoard[rowIndex][colIndex] = cell;
+                    //       });
+                    // });
+
+                    const combinedBoard = parsedBoard.map((row, rowIndex) =>
+                        row.map((cell, colIndex) =>
+                          cell.value !== 0 ? cell : parsedUserBoard[rowIndex][colIndex]
+                        )
+                      );
+
+                    setBoard(combinedBoard);
+                    setBoardID(board_id);
+                    setInGame(true); 
+                    setIsPaused(false);
                     setIsSolved(false);
                     setIncorrectCells([]);
                 } else {
@@ -192,6 +241,7 @@ export const SudokuProvider = ({ children }) => {
             updateBoard, 
             getSpecificHint,
             getHint,
+            retrieveGame,
             undo, redo, 
             difficulty, setDifficulty, startGame,
             inNote, setInNote,

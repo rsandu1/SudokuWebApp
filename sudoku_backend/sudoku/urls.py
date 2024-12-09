@@ -5,6 +5,8 @@ from sudoku.views.user_action_views import *
 
 urlpatterns = [
     path('sudoku/board', SudokuBoardView.as_view(), name='sudoku-board'),
+    path('sudoku/retrieve/<int:board_id>/', RetrieveView.as_view(), name='sudoku-retrieve'),  # Handles GET requests with BoardID
+
     path('sudoku/input', InputView.as_view(), name='sudoku-input'),
     path('sudoku/undo', UndoView.as_view(), name='sudoku-undo'),
     path('sudoku/redo', RedoView.as_view(), name='sudoku-redo'),

@@ -5,13 +5,22 @@ import './NavBar.css'
 import { useSudoku } from '../../context/SudokuContext';
 
 const NavBar = () => {
-    const { difficulty, setDifficulty, startGame, setIsPaused, setTimer, setCurDifficulty, inGame, setInGame } = useSudoku();
+    const { difficulty, setDifficulty, startGame, setIsPaused, setTimer, setCurDifficulty, inGame, setInGame, retrieveGame } = useSudoku();
     const handleDifficultyChange = (e) => {
         setDifficulty(e.target.value);
     };
 
     // Handle dialogue states.
     const [open, setOpen] = useState(false);
+
+    const [newOpen, setNewOpen] = useState(false);
+
+    // Handle board ID for game retrieval 
+    const [boardId, setBoardId] = useState('');
+
+    const handleInputChange = (e) => {
+        setBoardId(e.target.value); 
+    };
 
     const handleOpen = () => {
         setOpen(true);
@@ -21,12 +30,21 @@ const NavBar = () => {
         setOpen(false);
     };
 
+    const handleNewOpen = () => {
+        setNewOpen(true);
+    };
+
+    const handleNewClose = () => {
+        setNewOpen(false);
+    };
+
     // Handle confirm start game
     const handleConfirmNewGame = () => {
+        console.log("hi")
         startGame();
         setTimer(0);
         setInGame(true);
-        setOpen(false);
+        setNewOpen(false);
         setIsPaused(false);
         setCurDifficulty(difficulty);
     };
@@ -34,7 +52,10 @@ const NavBar = () => {
     // Handle confirm retrieve game
     const handleConfirmRetrieveGame = () => {
         console.log('Clicked Retrieve');
+        console.log("Board ID:", boardId);
         setOpen(false);
+        retrieveGame(boardId);
+
     };
 
     return (
@@ -84,7 +105,7 @@ const NavBar = () => {
                                     <Button
                                         variant="contained"
                                         color="primary"
-                                        onClick={handleOpen}
+                                        onClick={handleNewOpen}
                                     >
                                         New Game
                                     </Button>
@@ -92,7 +113,7 @@ const NavBar = () => {
 
                                 {/* Warning Message to confirm start new game */}
                                 <div>
-                                    <Dialog open={open} onClose={handleClose}>
+                                    <Dialog open={newOpen} onClose={handleNewClose}>
                                         <DialogTitle>Start Game</DialogTitle>
                                         <DialogContent>
                                             <DialogContentText>
@@ -101,7 +122,7 @@ const NavBar = () => {
                                             </DialogContentText>
                                         </DialogContent>
                                         <DialogActions>
-                                            <Button onClick={handleClose} color="primary">
+                                            <Button onClick={handleNewClose} color="primary">
                                                 Cancel
                                             </Button>
                                             <Button onClick={handleConfirmNewGame} color="grey" autoFocus>
@@ -118,7 +139,7 @@ const NavBar = () => {
                                 <NavDropdown.Item>
                                     <div onClick={(e) => e.stopPropagation()}>
                                         <Form.Group className="mb-3" controlId="formBasicEmail">
-                                            <Form.Control type="email" placeholder="Board ID" />
+                                            <Form.Control type="email" placeholder="Board ID" value={boardId} onChange={handleInputChange} />
                                         </Form.Group>
                                     </div>
 

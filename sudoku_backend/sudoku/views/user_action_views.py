@@ -140,6 +140,26 @@ class CheckSudokuView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 """
+Check Sudoku Game API View
+"""
+class CheckSudokuView(APIView):
+    def post(self, request):
+        try:
+            id = request.data.get('board_id')
+            board = SudokuBoard.objects.get(pk=id)
+            isSolved, incorrectCells = checkBoard(board)
+            
+            return Response({
+                "detail": "Checked board successful.",
+                "is_solved": isSolved,
+                "incorrectCells": incorrectCells
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+"""
 Note API View
 """
 class NoteView(APIView):    
@@ -234,5 +254,22 @@ class SpecificHintView(APIView):
                 status=status.HTTP_200_OK
             )
                 
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+"""
+Retrieve Sudoku
+"""
+class RetrieveView(APIView):
+   def get(self, request, board_id):
+        """
+        GET: Fetch Sudoku board given id.
+        """
+        try: 
+            print(board_id)
+            board = SudokuBoard.objects.get(board_id=board_id)
+            return Response({"board": board.board,
+                             "user_board": board.userBoard}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

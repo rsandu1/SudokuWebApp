@@ -10,7 +10,7 @@ import './SudokuBoard.css';
 import { useSudoku } from '../../context/SudokuContext';
 
 function SudokuBoard() {
-    const { board, updateBoard, isPaused, inGame, isSolved, setIsSolved, inNote, incorrectCells, setCurrentCell, currentCell} = useSudoku();
+    const { board, updateBoard, isPaused, inGame, isSolved, setInGame, incorrectCells, setCurrentCell, currentCell} = useSudoku();
 
     const subGridSize = board.length;
     // Event Handler for user actions
@@ -57,7 +57,8 @@ function SudokuBoard() {
 
     // Handle message when game is solved
     const handleCloseDialog = () => {
-        setIsSolved(false);
+        // setIsSolved(false);
+        setInGame(false);
     };
 
     return (
@@ -69,7 +70,7 @@ function SudokuBoard() {
         )}
 
         <table className={`sudoku-board ${isPaused && inGame ? 'blur' : ''}`}>
-            <tbody>
+            <tbody className={`tbody ${isSolved ? 'solved' : ''}`}>
                 {board.map((row, rowIndex) => (
                     <tr
                         key={rowIndex}
@@ -96,7 +97,7 @@ function SudokuBoard() {
             </tbody>
         </table>
 
-        <Dialog open={isSolved} onClose={handleCloseDialog}>
+        <Dialog open={isSolved && inGame} onClose={handleCloseDialog}>
                 <DialogTitle>Game Completed</DialogTitle>
                 <DialogContent>
                     Congratulations! You have successfully completed the Sudoku puzzle.

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import axios from 'axios';
 
 const SudokuContext = createContext();
@@ -173,8 +173,7 @@ export const SudokuProvider = ({ children }) => {
                 if (response.data) {
                     if (response.data.is_solved){
                         setIsSolved(true);
-                        console.log("hi")
-                        setInGame(false);
+                        // setInGame(false);
                     }else if(Array.isArray(response.data.incorrectCells)){
                         setIncorrectCells(response.data.incorrectCells);
                     }

@@ -35,12 +35,12 @@ const UpperMenu = () => {
             <Stack direction="row" spacing={2} alignItems="center">
 
                 <Typography className='uppermenu-text' variant="h6">
-                    Board ID : {boardID == 0 ? '' : boardID}
+                    Board ID: {boardID == 0 ? '' : boardID}
                 </Typography>
 
                 {/* Difficulty */}
                 <Typography className='uppermenu-text' variant="h6">
-                    Difficulty : {
+                    Difficulty: {
                         (() => {
                             const difficultyText = boardTypeText[curDifficulty];
                             if (difficultyText === "9x9 25") {

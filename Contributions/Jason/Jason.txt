@@ -1,0 +1,46 @@
+Jason Contributions
+
+Sudoku Board Design
+
+This application’s Sudoku board is implemented as a dynamic React component that renders 
+a grid based on the board’s size. The game board generation process is handled by the backend. 
+When a new game is requested, the backend generates a complete Sudoku board and then removes 
+a specified number of cells to create the puzzle. When the board is generated, a new SudokuBoard 
+instance in the database with the generated board, solution, and an empty user board. The backend 
+ensures that the generated board is valid and solvable, and the user interaction is persistent as 
+they're stored in the database. Users will be able to resume the game from where they left off 
+through retrieving game.
+
+The game board is parsed on the frontend using a function that converts a string representation 
+of the board into a 2D array of objects. Each object represents a cell on the board and contains 
+properties such as value, isEditable, notes, and isHint. This parsing is crucial for rendering 
+the board in a way that allows for dynamic updates and user interactions. The parsing functions, 
+parseBoard and parseUserBoard, ensure that the board is correctly initialized with the appropriate 
+values and editable states based on the game's difficulty level and the user's progress.
+
+Input handling is a collaborative effort between the frontend and backend. On the frontend, user 
+inputs are captured through event handlers that update the board's state. When a user enters a 
+value or a note, the frontend sends a request to the backend to update the corresponding SudokuBoard 
+and ActionHistory or NoteHistory models. The backend processes these requests, updating the database 
+and returning the updated state to the frontend. This ensures that the game state is consistently 
+maintained across both the client and server, allowing for features like undo/redo and retrieving game.
+
+Database Design
+
+Django provides excellent support for SQLite and includes a built-in ORM, making it easy to perform 
+database queries throughout the code. The database design centers on the SudokuBoard model, which holds 
+the board’s current state, its solution, and the user’s current progress. The ActionHistory and 
+NoteHistory models complement SudokuBoard by tracking user actions and notes, respectively. ActionHistory 
+records all changes made to the board by tracking previous_value, new_value, and undone, enabling 
+features like undo and redo with the field. NoteHistory stores cell-specific notes and ensures 
+uniqueness within each board cell. These models are linked through foreign keys, ensuring that when 
+a board is deleted, all related actions and notes are removed as well.
+
+Note Functionality Design
+
+The note feature is implemented with the support of backend NoteHistory model, which maintains a list 
+of possible values for each cell as a sorted, unique string of digits. When users add or remove a note, 
+the application updates the NoteHistory model to reflect the change. The notes integrate seamlessly with 
+the board component, allowing players to switch between entering fixed values and adding notes. This 
+enhanced functionality provides players with more flexible and organized problem-solving tools, ultimately 
+improving the overall user experience.

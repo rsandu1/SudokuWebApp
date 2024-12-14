@@ -1,0 +1,44 @@
+Robert Contributions
+
+In our web app I worked on the Check Solution Function, Undo and Redo functions on the 
+backend while on the frontend I focused mostly on design. I also coded our initial 
+implementaion that focused almost everything on the frontend (exclusive javascript
+code). The code was then redone from scratch to use React.js since we had a hard time 
+communicating with the database. I had a lot of trouble understanding the new structure 
+but I still managed to implement the aforementioned functions. I was also in charge of 
+maintaining the project plan, creating the Sequence and Activity Diagrams, as well as 
+creating our presentation slides.
+
+Check Solution (checkboard.py, algorithims.py, LowerMenu.jsx)
+From the database the board object was retrieved containing: board.board: The original 
+Sudoku board (initial state), board.userBoard: The user's current board state (includes 
+user-entered numbers) and the board.solution: The correct solution for the board. The 
+sudoku_board and user_board become merged in the combined_board where the non-zero entries 
+from user_board replace the corresponding values in sudoku_board. Then iterates through the
+combined_board to compare it against solution. If solved correctly returns True and an 
+empty list of invalid_entries. If not solved correctly uses the is_valid function in 
+algorithms.py to validate the number based on Sudoku rules (row, column, and subgrid 
+constraints) then adds invalid cells (those failing validation) to invalid_entries 
+which is return along with False. If solved correctly a message is poped up 
+"Congratulations! You have successfully completed the Sudoku puzzle.". If not solved 
+correctly the frontend knows which cells to highlight red from invalid_entires.
+
+Undo Function (SudokuContext.jsx)
+Sends a POST request to the /api/sudoku/undo endpoint with the board id so it can 
+identify the specific board for which the undo operation is requested.
+If the server processes the request successfully, it responds with:
+response.data.row: The row of the cell affected by the undo.
+response.data.col: The column of the cell affected by the undo.
+response.data.previous_value: The value the cell had before the last change.
+The board state is copied and value of the affected cell (row, col) is updated to 
+previous_value and the board is updated with the setBoard() function.
+
+Redo Function (SudokuContext.jsx)
+Sends a POST request to the /api/sudoku/redo endpoint with the board id so it can 
+identify the specific board for which the redo operation is requested.
+If the server processes the request successfully, it responds with:
+response.data.row: The row of the cell affected by the redo.
+response.data.col: The column of the cell affected by the redo.
+response.data.new_value: The value of the cell after redoing the change.
+The board state is copied and value of the affected cell (row, col) is updated to 
+new_value and the board is updated with the setBoard() function.

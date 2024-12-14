@@ -5,7 +5,7 @@ const SudokuContext = createContext();
 
 export const SudokuProvider = ({ children }) => {
     const defaultBoard = Array.from({ length: 9 }, () => Array(9).fill(-1));
-    const boardType = [[9, 25], [9, 45], [9, 60]]; // Board length + cells to fill
+    const boardType = [[4, 12], [9, 25], [9, 45]]; // Board length + cells to fill
     const [currentCell, setCurrentCell] = useState({row: -1, col: -1})
     const [board, setBoard] = useState(defaultBoard);
     const [incorrectCells, setIncorrectCells] = useState([]);
@@ -15,7 +15,7 @@ export const SudokuProvider = ({ children }) => {
     const [inGame, setInGame] = useState(false);
     const [timer, setTimer] = useState(0);
     const [curDifficulty, setCurDifficulty] = useState(0);
-    const boardTypeText = ["9x9 25", "9x9 45", "9x9 60"];
+    const boardTypeText = ["4x4 12", "9x9 25", "9x9 45"];
     const [boardID, setBoardID] = useState(0);
     const [isSolved, setIsSolved] = useState(false);
 
@@ -74,7 +74,7 @@ export const SudokuProvider = ({ children }) => {
             Array.from({ length: size }, (_, colIndex) => ({
                 value: Number(boardString[rowIndex * size + colIndex]),
                 isEditable: true, // Editable if the value is 0
-                note: 0, 
+                note: [], 
                 isHint: false
             })));
     };
@@ -164,13 +164,13 @@ export const SudokuProvider = ({ children }) => {
                 value: newValue,
             };
             try {
-                await axios.post(endpoint, payload);
+                const response = await axios.post(endpoint, payload);
                 const newBoard = board.map((r, rowIndex) =>
                     r.map((cell, colIndex) =>
                         rowIndex === row && colIndex === col
                             ? inNote
-                                ? { ...cell, note: newValue } // Update note if inNote is true
-                                : { ...cell, value: newValue } // Update value otherwise
+                                ? { ...cell, notes: response.data.notes.split('').map(Number) }
+                                : { ...cell, value: newValue }
                             : cell
                     )
                 );
@@ -232,6 +232,18 @@ export const SudokuProvider = ({ children }) => {
             } catch (error) {
                 console.error('Failed to check the board:', error);
             }
+        }
+    };
+
+    const handleNoteDisplay = (cell) => {
+        if (cell.value && cell.value !== 0 && cell.value !== -1) { 
+            return cell.value;
+        }
+        else if (cell.notes && cell.notes.length > 0) {
+            return cell.notes.join(' '); 
+        }
+        else { 
+            return '';
         }
     };
 

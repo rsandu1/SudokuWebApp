@@ -43,11 +43,11 @@ const UpperMenu = () => {
                     Difficulty: {
                         (() => {
                             const difficultyText = boardTypeText[curDifficulty];
-                            if (difficultyText === "9x9 25") {
+                            if (difficultyText === "4x4 12") {
                                 return "Easy";
-                            } else if (difficultyText === "9x9 45") {
+                            } else if (difficultyText === "9x9 25") {
                                 return "Medium";
-                            } else if (difficultyText === "9x9 60") {
+                            } else if (difficultyText === "9x9 45") {
                                 return "Hard";
                             } else {
                                 return "Unknown";

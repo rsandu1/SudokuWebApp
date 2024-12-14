@@ -40,8 +40,8 @@
 }
 
 .sudoku-cell {
-    width: 50px;
-    height: 50px;
+    width: 55px;
+    height: 55px;
     text-align: center;
     vertical-align: middle; 
     color:black;
@@ -52,6 +52,8 @@
     cursor: pointer;
     outline: none;
     background-color: #fff;
+    padding: 0;
+    position: relative;
 }
 
 .sudoku-cell.editable {
@@ -67,6 +69,8 @@
 .sudoku-cell-note {
     background-color: #f9f9ff;
     color: #ED6C02;
+    font-size: 12px;
+    box-sizing: border-box;
 }
 .sudoku-cell-note.editable {
     background-color: #f9f9ff;
@@ -87,7 +91,8 @@
 }
 
 .sudoku-cell:focus {
-    border: 2pt solid #007bff;
+    outline: 1.5pt solid #007bff;
+    outline-offset: -2px;
     /* box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); */
 }
 
@@ -123,4 +128,34 @@
 
 .sub-row-2:first-child .sudoku-cell {
     border-top: 3.5px solid black;
+}
+
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    height: 100%;
+    width: 100%;
+    font-size: 10.5px;
+    font-weight: normal;
+    box-sizing: border-box;
+    padding: 2px;
+}
+
+.note-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.cell-value {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    font-size: 25px;
 }

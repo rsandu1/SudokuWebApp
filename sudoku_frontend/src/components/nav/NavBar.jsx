@@ -40,7 +40,6 @@ const NavBar = () => {
 
     // Handle confirm start game
     const handleConfirmNewGame = () => {
-        console.log("hi")
         startGame();
         setTimer(0);
         setInGame(true);

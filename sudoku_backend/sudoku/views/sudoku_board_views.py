@@ -9,7 +9,7 @@ class SudokuBoardView(APIView):
     """
     View to handle Sudoku board generation (POST) and fetching (GET).
     """
-
+    
     def post(self, request):
         """
         POST: Generate a new Sudoku puzzle based on num_remove and size.

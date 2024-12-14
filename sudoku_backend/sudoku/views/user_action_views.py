@@ -140,26 +140,6 @@ class CheckSudokuView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 """
-Check Sudoku Game API View
-"""
-class CheckSudokuView(APIView):
-    def post(self, request):
-        try:
-            id = request.data.get('board_id')
-            board = SudokuBoard.objects.get(pk=id)
-            isSolved, incorrectCells = checkBoard(board)
-            
-            return Response({
-                "detail": "Checked board successful.",
-                "is_solved": isSolved,
-                "incorrectCells": incorrectCells
-            }, status=status.HTTP_200_OK)
-
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
-
-"""
 Note API View
 """
 class NoteView(APIView):    
@@ -169,39 +149,53 @@ class NoteView(APIView):
             row = request.data.get('row')
             col = request.data.get('col')
             value = request.data.get('value')
-
-            # if not all([id, row, col, value]):
-            #     return Response(
-            #         {"detail": "Missing parameters."},
-            #         status=status.HTTP_400_BAD_REQUEST
-            #     )
+            
+            if not all([id, row, col]):
+                return Response(
+                    {"detail": "Missing parameters."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
             board = SudokuBoard.objects.get(pk=id)
-
-            note, created = NoteHistory.objects.update_or_create(
+            note, created = NoteHistory.objects.get_or_create(
                 sudoku_board=board,
                 row=row,
                 col=col,
-                defaults={'value': value}
+                defaults={'notes': ''}
             )
 
-            if created:
-                return Response(
-                    {"detail": "Note created successfully."},
-                    status=status.HTTP_201_CREATED
-                )
+            if value == 0:  # Handle deletion
+                if note.notes:  # If there are notes
+                    current_notes = list(map(int, note.notes))
+                    if current_notes:  # Remove the last added note
+                        current_notes.pop()
+                        note.notes = ''.join(map(str, current_notes))
+                        note.save()
+                        if not note.notes:  # If no notes left, delete the record
+                            note.delete()
             else:
-                return Response(
-                    {"detail": "Note updated successfully."},
-                    status=status.HTTP_200_OK
-                )
+                # Convert notes to list of integers
+                current_notes = list(map(int, note.notes)) if note.notes else []
+                
+                if value not in current_notes:  # Only add if not already present
+                    current_notes.append(value)
+                    current_notes.sort()  # Keep notes sorted
+                    note.notes = ''.join(map(str, current_notes))
+                    note.save()
+
+            return Response(
+                {
+                    "detail": "Note updated successfully.",
+                    "notes": note.notes if note.notes else ''
+                },
+                status=status.HTTP_200_OK
+            )
 
         except SudokuBoard.DoesNotExist:
             return Response(
                 {"detail": "SudokuBoard not found."},
                 status=status.HTTP_404_NOT_FOUND
             )
-
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 

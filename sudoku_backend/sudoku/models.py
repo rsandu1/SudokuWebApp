@@ -36,12 +36,12 @@ class NoteHistory(models.Model):
     )
     row = models.PositiveBigIntegerField()
     col = models.PositiveBigIntegerField()
-    value = models.IntegerField()
+    notes = models.CharField(max_length=9, default='') 
     
-    # class Meta:
-    #     constraints = [
-    #         models.UniqueConstraint(
-    #             fields=['row', 'col'],
-    #             name='unique_note_per_position'
-    #         )
-    #     ]
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['sudoku_board', 'row', 'col'],
+                name='unique_note_per_board_position'
+            )
+        ]

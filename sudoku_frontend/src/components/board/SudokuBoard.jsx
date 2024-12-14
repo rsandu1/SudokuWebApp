@@ -10,7 +10,7 @@ import './SudokuBoard.css';
 import { useSudoku } from '../../context/SudokuContext';
 
 function SudokuBoard() {
-    const { board, updateBoard, isPaused, inGame, isSolved, setInGame, incorrectCells, setCurrentCell, currentCell} = useSudoku();
+    const { board, updateBoard, isPaused, inGame, isSolved, setInGame, incorrectCells, setCurrentCell, currentCell, inNote} = useSudoku();
 
     const subGridSize = board.length;
     // Event Handler for user actions
@@ -30,25 +30,22 @@ function SudokuBoard() {
         }
     };
 
-    useEffect(() => {
-        console.log("Updated currentCell:", currentCell);
-    }, [currentCell]); // Dependency array ensures it runs when `currentCell` changes
-
-    const handleNoteDisplay = (cell) =>{
-        // if (inNote && cell.isEditable && cell.note !== 0){
-        //     return cell.note;
-        // }else{
-        //     return cell.value && cell.value !== 0 && cell.value !== -1 ? cell.value : '';
-        // }
-        if (cell.value && cell.value !== 0 && cell.value !== -1) { 
-            return cell.value;
+    const handleNoteDisplay = (cell) => {
+        if (inNote && cell.notes && cell.notes.length > 0) {
+            return (
+                <div className="notes-grid">
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
+                        <div key={num} className="note-cell">
+                            {cell.notes.includes(num) ? num : ''}
+                        </div>
+                    ))}
+                </div>
+            );
         }
-        else if (cell.note !== 0) { 
-            return cell.note; 
+        else if (cell.value && cell.value !== 0 && cell.value !== -1) { 
+            return <span className="cell-value">{cell.value}</span>;
         }
-        else { 
-            return '';
-        }
+        return '';
     };
 
     const isCellIncorrect = (row, col) => {
@@ -83,7 +80,7 @@ function SudokuBoard() {
                                     ${cell.isEditable ? 'editable' : ''} 
                                     ${cell.isHint ? 'hint' : ''} 
                                     ${subGridSize === 4 ? 'sub-cell-2' : 'sub-cell-3'} 
-                                    ${cell.note !== 0 && cell.value == 0? 'sudoku-cell-note' : ''} 
+                                    ${inNote && cell.notes?.length > 0 ? 'sudoku-cell-note' : ''} 
                                     ${isCellIncorrect(rowIndex, colIndex) ? 'sudoku-cell-incorrect' : ''}`}
                                 tabIndex="0"
                                 onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}

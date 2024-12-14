@@ -2,6 +2,10 @@
 
 A full-stack web application for playing Sudoku puzzles with various features and difficulty levels.
 
+## Snapshot
+
+<img src="assets/snapshot.png" width="600" alt="Sudoku Web App Screenshot"/>
+
 ## Features
 
 - 4x4 and 9x9 Sudoku boards
@@ -73,7 +77,3 @@ npm run dev
 ## Usage
 
 Follow the README.md in sudoku_backend and sudoku_frontend.
-
-## Snapshot
-
-![Snapshot](assets/snapshot.png)

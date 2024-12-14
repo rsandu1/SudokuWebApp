@@ -74,6 +74,3 @@ npm install
 # Run Frontend Development Server
 npm run dev
 ```
-## Usage
-
-Follow the README.md in sudoku_backend and sudoku_frontend.

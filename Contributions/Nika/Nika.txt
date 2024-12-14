@@ -1,1 +1,14 @@
 Nika Contributions
+
+Hint functions: 
+I implemented the random hint and specific hint functions by making an API call that would use 
+the solution stored in the backend and either randomly or specifically return a correct cell’s value. 
+For the specific cell, extra logic had to be added to update the state in the frontend with the row 
+and column of the current cell being clicked on. I also had to make sure that this state update would 
+happen after a single click by using React’s useEffect. 
+
+Retrieve game:
+I implemented the retrieve game feature by making an API call that would use a game ID to return 
+the game stored in the database associated with that ID. The most complicated part was ensuring 
+that the game would show correctly on the frontend side, which involved processing the game board 
+and updating the state to reflect that. 

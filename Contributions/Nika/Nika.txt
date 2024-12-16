@@ -5,10 +5,16 @@ I implemented the random hint and specific hint functions by making an API call 
 the solution stored in the backend and either randomly or specifically return a correct cell’s value. 
 For the specific cell, extra logic had to be added to update the state in the frontend with the row 
 and column of the current cell being clicked on. I also had to make sure that this state update would 
-happen after a single click by using React’s useEffect. 
+happen after a single click by using React’s useEffect. I also updated the frontend by showing the hints in green.
 
 Retrieve game:
 I implemented the retrieve game feature by making an API call that would use a game ID to return 
 the game stored in the database associated with that ID. The most complicated part was ensuring 
 that the game would show correctly on the frontend side, which involved processing the game board 
-and updating the state to reflect that. 
+and updating the state to reflect that.
+
+Fixing bugs:
+I fixed several bugs in the code, mostly in the check solution and note functionality. 
+
+Successful game:
+Our existing code did not trigger the dialogue box correctly when a game was successfully completed. I fixed the logic and also added a green glow around the game to more clearly visually indicate that the game was successfully completed. 
